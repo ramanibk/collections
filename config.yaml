@@ -1,7 +1,7 @@
 site:
   title: Ramani
   subtitle: Field notes, photographs, and things made.
-  base_url: ""
+  base_url: /collections
   recent_entries: 5
 
 build:
