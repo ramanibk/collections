@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="introduction">
+    <h1>Making</h1>
+    <p class="subtitle">Projects, materials, experiments, and things made by hand.</p>
+  </header>
+
+  <section aria-labelledby="making-summary-heading">
+    <h2 id="making-summary-heading">Workshop Summary</h2>
+    <dl class="statistics statistics--compact">
+      <div><dt>projects</dt><dd>{{ collection.total_projects }}</dd></div>
+      <div><dt>completed</dt><dd>{{ collection.completed_projects }}</dd></div>
+      <div><dt>crafts</dt><dd>{{ collection.craft_pages | length }}</dd></div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="crafts-heading">
+    <h2 id="crafts-heading">Crafts</h2>
+    {% if collection.craft_pages %}
+      <div class="taxonomy-groups">
+        {% for craft in collection.craft_pages %}
+          <section class="taxonomy-group" aria-labelledby="craft-{{ craft.name | slugify }}">
+            <h3 id="craft-{{ craft.name | slugify }}"><a href="{{ craft_url(craft.name) }}">{{ craft.name }}</a></h3>
+            <ul class="taxonomy-list">
+              {% for project in craft.projects %}
+                <li><a href="{{ entry_url(project.id) }}"><span>{{ project.title }}</span><span>{{ project.metadata.status or 'status not recorded' }}</span></a></li>
+              {% endfor %}
+            </ul>
+          </section>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-state">No craft projects recorded yet.</p>
+    {% endif %}
+  </section>
+
+  {% if collection.uncategorized_projects %}
+    <section aria-labelledby="other-projects-heading">
+      <h2 id="other-projects-heading">Other Projects</h2>
+      <ul class="recent-entries">
+        {% for project in collection.uncategorized_projects %}
+          <li><time datetime="{{ project.date.isoformat() }}">{{ project.date | human_date }}</time><a href="{{ entry_url(project.id) }}">{{ project.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+{% endblock %}

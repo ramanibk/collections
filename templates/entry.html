@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <article class="entry">
+    <header class="introduction">
+      <p class="eyebrow"><a href="{{ category_url(entry.category) }}">{{ entry.category | title }}</a></p>
+      <h1>{{ entry.title }}</h1>
+      <p class="entry-date"><time datetime="{{ entry.date.isoformat() }}">{{ entry.date | human_date }}</time></p>
+      {% if entry.location %}<p>{{ entry.location }}</p>{% endif %}
+    </header>
+
+    {% if entry.images %}
+      <section aria-labelledby="gallery-heading">
+        <h2 id="gallery-heading">Photographs</h2>
+        <div class="entry-gallery">
+          {% for filename in entry.images %}
+            <figure>
+              <img src="{{ media_url(entry.id, filename) }}" alt="{{ entry.get('image_alt', entry.title) }}" loading="lazy">
+            </figure>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    {% if entry.body_html %}
+      <section class="entry-body" aria-label="Entry notes">{{ entry.body_html | safe }}</section>
+    {% endif %}
+
+    {% if entry.tags %}
+      <footer class="entry-tags"><span>Filed under:</span> {{ entry.tags | join(', ') }}</footer>
+    {% endif %}
+  </article>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="introduction">
+    <p class="eyebrow"><a href="{{ category_url('birds') }}">Bird Notebook</a></p>
+    <h1>{{ species.common_name }}</h1>
+    {% if species.scientific_name %}
+      <p class="subtitle"><i>{{ species.scientific_name }}</i></p>
+    {% endif %}
+  </header>
+
+  <section aria-labelledby="record-heading">
+    <h2 id="record-heading">Observation Record</h2>
+    <dl class="record-summary record-summary--three">
+      <div><dt>Observations</dt><dd>{{ species.sighting_count }}</dd></div>
+      <div><dt>First sighting</dt><dd>{{ species.first_sighting | human_date }}</dd></div>
+      <div><dt>Most recent sighting</dt><dd>{{ species.most_recent_sighting | human_date }}</dd></div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="sightings-heading">
+    <h2 id="sightings-heading">Sightings</h2>
+    <div class="observation-grid">
+      {% for entry in species.sightings %}
+        <article class="observation-card">
+          <a href="{{ entry_url(entry.id) }}">
+            {% if entry.cover %}
+              <img src="{{ media_url(entry.id, entry.cover) }}" alt="{{ entry.get('image_alt', entry.title) }}" loading="lazy">
+            {% endif %}
+            <span class="observation-card__details">
+              <time datetime="{{ entry.date.isoformat() }}">{{ entry.date | human_date }}</time>
+              {% if entry.location %}<span>{{ entry.location }}</span>{% endif %}
+              {% if entry.metadata.count %}<span>{{ entry.metadata.count }} bird{% if entry.metadata.count != 1 %}s{% endif %}</span>{% endif %}
+            </span>
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="introduction">
+    <p class="eyebrow"><a href="{{ observe_url() }}">Observe</a></p>
+    <h1>Cloud Atlas</h1>
+    <p class="subtitle">A growing catalogue of clouds observed, photographed, and tentatively identified.</p>
+  </header>
+
+  <section aria-labelledby="atlas-summary-heading">
+    <h2 id="atlas-summary-heading">Atlas Summary</h2>
+    <dl class="statistics statistics--compact">
+      <div><dt>total sightings</dt><dd>{{ atlas.statistics.total_sightings }}</dd></div>
+      <div><dt>identified</dt><dd>{{ atlas.statistics.identified_sightings }}</dd></div>
+      <div><dt>unidentified</dt><dd>{{ atlas.statistics.unidentified_sightings }}</dd></div>
+      <div><dt>genera observed</dt><dd>{{ atlas.statistics.genera_observed }}</dd></div>
+      <div><dt>species observed</dt><dd>{{ atlas.statistics.species_observed }}</dd></div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="genera-heading">
+    <h2 id="genera-heading">Genera</h2>
+    {% if atlas.groups %}
+      <div class="taxonomy-groups">
+        {% for group in atlas.groups %}
+          <section class="taxonomy-group" aria-labelledby="group-{{ group.name | slugify }}">
+            <h3 id="group-{{ group.name | slugify }}">{{ group.name }}</h3>
+            <ul class="taxonomy-list">
+              {% for genus in group.genera %}
+                <li>
+                  {% if genus.sighting_count %}
+                    <a href="{{ cloud_genus_url(genus.name) }}"><span>{{ genus.name | title }}</span><span>{{ genus.sighting_count }}</span></a>
+                  {% else %}
+                    <span><span>{{ genus.name | title }}</span><span>0</span></span>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </section>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-state">No cloud genera have been recorded yet.</p>
+    {% endif %}
+  </section>
+{% endblock %}

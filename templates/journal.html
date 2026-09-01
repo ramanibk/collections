@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="introduction">
+    <h1>Journal</h1>
+    <p class="subtitle">A chronological record of the entire archive.</p>
+  </header>
+
+  <section aria-labelledby="years-heading">
+    <h2 id="years-heading">Years</h2>
+    {% if archive.years %}
+      <ul class="taxonomy-list">
+        {% for year in archive.years %}
+          <li><a href="{{ year_url(year.year) }}"><span>{{ year.year }}</span><span>{{ year.entry_count }} entr{% if year.entry_count == 1 %}y{% else %}ies{% endif %}</span></a></li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty-state">The journal is ready for its first entry.</p>
+    {% endif %}
+  </section>
+
+  {% for year in archive.years %}
+    {% for month in year.months %}
+      <section aria-labelledby="month-{{ month.year }}-{{ month.month }}">
+        <h2 id="month-{{ month.year }}-{{ month.month }}">{{ month.label }}</h2>
+        <ol class="journal-list">
+          {% for entry in month.entries %}
+            <li>
+              <time datetime="{{ entry.date.isoformat() }}">{{ entry.date.day }}</time>
+              <a href="{{ entry_url(entry.id) }}">{{ entry.title }}</a>
+              <span>{{ entry.category | title }}</span>
+            </li>
+          {% endfor %}
+        </ol>
+      </section>
+    {% endfor %}
+  {% endfor %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="introduction">
+    <p class="eyebrow">Observe</p>
+    <h1>Field Observations</h1>
+    <p class="subtitle">Clouds, birds, and small discoveries recorded as I learn to notice them.</p>
+  </header>
+
+  <section aria-labelledby="notebooks-heading">
+    <h2 id="notebooks-heading">Notebooks</h2>
+    <nav class="collection-nav" aria-label="Observation notebooks">
+      <a href="{{ category_url('clouds') }}">
+        <span><strong>Cloud Atlas</strong><small>A catalogue of cloud sightings and identifications.</small></span>
+        <span>{{ statistics.cloud_observations }} →</span>
+      </a>
+      <a href="{{ category_url('birds') }}">
+        <span><strong>Bird Notebook</strong><small>Bird observations and species I'm learning.</small></span>
+        <span>{{ statistics.bird_observations }} →</span>
+      </a>
+      <a href="{{ category_url('curiosities') }}">
+        <span><strong>Curiosities</strong><small>Things that resist easy classification.</small></span>
+        <span>{{ statistics.curiosity_count }} →</span>
+      </a>
+    </nav>
+  </section>
+{% endblock %}

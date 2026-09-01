@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="introduction">
+    <p class="eyebrow"><a href="{{ category_url('making') }}">Making</a></p>
+    <h1>{{ craft.name }}</h1>
+    <p class="subtitle">{{ craft.project_count }} project{% if craft.project_count != 1 %}s{% endif %}</p>
+  </header>
+
+  <section aria-labelledby="projects-heading">
+    <h2 id="projects-heading">Projects</h2>
+    <div class="observation-grid">
+      {% for project in craft.projects %}
+        <article class="observation-card">
+          <a href="{{ entry_url(project.id) }}">
+            {% if project.cover %}<img src="{{ media_url(project.id, project.cover) }}" alt="{{ project.get('image_alt', project.title) }}" loading="lazy">{% endif %}
+            <span class="observation-card__details">
+              <strong>{{ project.title }}</strong>
+              <time datetime="{{ project.date.isoformat() }}">{{ project.date | human_date }}</time>
+              {% if project.metadata.status %}<span>{{ project.metadata.status }}</span>{% endif %}
+            </span>
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

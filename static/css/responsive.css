@@ -1,0 +1,35 @@
+@media (min-width: 60rem) {
+  .observation-grid,
+  .entry-gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 52rem) {
+  main { padding-block: var(--space-lg); }
+  .site-header { align-items: flex-start; }
+  .site-header nav ul { justify-content: flex-end; }
+}
+@media (max-width: 42rem) {
+  :root { --space-lg: 2.25rem; --space-xl: 3.5rem; }
+  .site-header { display: block; }
+  .site-header nav { margin-top: var(--space-sm); padding-top: var(--space-sm); border-top: var(--rule); }
+  .site-header nav ul { justify-content: flex-start; column-gap: var(--space-sm); }
+  .site-header nav a { padding-block: 0.35rem; }
+  .statistics { gap: var(--space-md); }
+  .record-summary,
+  .record-summary--three,
+  .observation-grid,
+  .entry-gallery { grid-template-columns: 1fr; }
+  .recent-entries li { grid-template-columns: 1fr; gap: 0; }
+  .journal-list li { grid-template-columns: 2rem minmax(0, 1fr); gap: var(--space-sm); }
+  .journal-list li > span { grid-column: 2; }
+  .collection-nav > a,
+  .index-list a,
+  .taxonomy-list a,
+  .taxonomy-list li > span { align-items: flex-start; }
+}
+@media (max-width: 25rem) {
+  .statistics { grid-template-columns: 1fr; }
+  .collection-nav > a,
+  .index-list a,
+  .taxonomy-list a,
+  .taxonomy-list li > span { display: grid; gap: var(--space-xs); }
+}

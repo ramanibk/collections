@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="introduction">
+    <p class="eyebrow"><a href="{{ category_url('clouds') }}">Cloud Atlas</a></p>
+    <h1>{{ genus.name | title }}</h1>
+    <p class="subtitle">{{ genus.sighting_count }} sighting{% if genus.sighting_count != 1 %}s{% endif %}</p>
+  </header>
+
+  <section aria-labelledby="record-heading">
+    <h2 id="record-heading">Observation Record</h2>
+    <dl class="record-summary">
+      <div><dt>First recorded</dt><dd>{{ genus.first_recorded | human_date }}</dd></div>
+      <div><dt>Most recent</dt><dd>{{ genus.most_recent | human_date }}</dd></div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="species-heading">
+    <h2 id="species-heading">Species Observed</h2>
+    <ul class="taxonomy-list">
+      {% for species in genus.species %}
+        <li><span><span>{{ species.name }}</span><span>{{ species.sighting_count }}</span></span></li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section aria-labelledby="sightings-heading">
+    <h2 id="sightings-heading">Sightings</h2>
+    <div class="observation-grid">
+      {% for entry in genus.sightings %}
+        <article class="observation-card">
+          <a href="{{ entry_url(entry.id) }}">
+            {% if entry.cover %}
+              <img src="{{ media_url(entry.id, entry.cover) }}" alt="{{ entry.get('image_alt', entry.title) }}" loading="lazy">
+            {% endif %}
+            <span class="observation-card__details">
+              <time datetime="{{ entry.date.isoformat() }}">{{ entry.date | human_date }}</time>
+              {% if entry.metadata.species %}<span>{{ entry.metadata.species }}</span>{% endif %}
+              {% if entry.location %}<span>{{ entry.location }}</span>{% endif %}
+            </span>
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

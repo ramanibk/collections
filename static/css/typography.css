@@ -1,0 +1,32 @@
+.site-name { font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.12em; text-decoration: none; }
+h1,
+h2,
+h3,
+p,
+dl { margin-top: 0; }
+h1 { max-width: 14ch; margin-bottom: var(--space-md); font-family: var(--font-heading); font-size: clamp(2.7rem, 8vw, 5rem); font-weight: 400; letter-spacing: 0.025em; line-height: 1.02; overflow-wrap: anywhere; }
+h2,
+.eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; }
+h2 { margin-bottom: var(--space-md); }
+.taxonomy-group h3 { margin-bottom: var(--space-sm); font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.subtitle { max-width: 34rem; margin-bottom: 0; font-size: clamp(1.15rem, 3vw, 1.55rem); line-height: 1.45; }
+.statistics dt,
+.collection-nav small,
+.observation-card__details,
+.entry-date,
+.entry-tags,
+.site-footer,
+.index-list small { color: var(--color-muted); }
+.statistics dd { margin: 0; font-size: clamp(2rem, 6vw, 4rem); line-height: 1; }
+.statistics--compact dd { font-size: clamp(1.8rem, 4vw, 3rem); }
+.recent-entries time,
+.journal-list time,
+.journal-list span,
+.record-summary dt { color: var(--color-muted); font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.03em; }
+.record-summary dt { letter-spacing: 0.08em; text-transform: uppercase; }
+.record-summary dd { margin: 0; }
+.index-letter { font-size: 1.4rem; }
+.empty-state { color: var(--color-muted); font-style: italic; }
+.entry-body { font-size: 1.05rem; }
+.entry-body > :first-child { margin-top: 0; }
+.entry-body :is(p, ul, ol, blockquote) { max-width: 68ch; }

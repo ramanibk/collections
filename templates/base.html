@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{ page_description or site.subtitle }}">
+    <title>{{ page_title or site.title }}</title>
+    <link rel="stylesheet" href="{{ static_url('css/variables.css') }}">
+    <link rel="stylesheet" href="{{ static_url('css/base.css') }}">
+    <link rel="stylesheet" href="{{ static_url('css/layout.css') }}">
+    <link rel="stylesheet" href="{{ static_url('css/typography.css') }}">
+    <link rel="stylesheet" href="{{ static_url('css/gallery.css') }}">
+    <link rel="stylesheet" href="{{ static_url('css/responsive.css') }}">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="site-name" href="{{ home_url() }}">{{ site.title | upper }}</a>
+      <nav aria-label="Main navigation">
+        <ul>
+          <li><a href="{{ home_url() }}"{% if current_section == 'home' %} aria-current="page"{% endif %}>Home</a></li>
+          <li><a href="{{ observe_url() }}"{% if current_section in ('observe', 'clouds', 'birds', 'curiosities') %} aria-current="page"{% endif %}>Observe</a></li>
+          <li><a href="{{ category_url('cats') }}"{% if current_section == 'cats' %} aria-current="page"{% endif %}>Cats</a></li>
+          <li><a href="{{ category_url('making') }}"{% if current_section == 'making' %} aria-current="page"{% endif %}>Make</a></li>
+          <li><a href="{{ journal_url() }}"{% if current_section == 'journal' %} aria-current="page"{% endif %}>Journal</a></li>
+          <li><a href="{{ index_url() }}"{% if current_section == 'index' %} aria-current="page"{% endif %}>Index</a></li>
+          <li><a href="{{ about_url() }}"{% if current_section == 'about' %} aria-current="page"{% endif %}>About</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main id="main-content">
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+      <p>{{ site.title }} — {{ site.subtitle }}</p>
+    </footer>
+  </body>
+</html>

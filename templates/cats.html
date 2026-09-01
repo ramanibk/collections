@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="introduction">
+    <h1>Cats</h1>
+    <p class="subtitle">Gwen, Billy, Jet, and occasional cats met along the way.</p>
+  </header>
+
+  <section aria-labelledby="cats-summary-heading">
+    <h2 id="cats-summary-heading">Collection Summary</h2>
+    <dl class="statistics statistics--compact">
+      <div><dt>my cats</dt><dd>{{ collection.profiles | length }}</dd></div>
+      <div><dt>entries</dt><dd>{{ collection.total_entries }}</dd></div>
+      <div><dt>photographs</dt><dd>{{ collection.total_photographs }}</dd></div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="my-cats-heading">
+    <h2 id="my-cats-heading">My Cats</h2>
+    <ul class="taxonomy-list">
+      {% for cat in collection.profiles %}
+        <li>
+          <a href="{{ cat_url(cat.name) }}">
+            <span>{{ cat.name }}</span>
+            <span>{{ cat.entry_count }} entr{% if cat.entry_count == 1 %}y{% else %}ies{% endif %} · {{ cat.photograph_count }} photo{% if cat.photograph_count != 1 %}s{% endif %}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section aria-labelledby="encounters-heading">
+    <h2 id="encounters-heading">Encounters</h2>
+    {% if collection.encounters %}
+      <ul class="recent-entries">
+        {% for entry in collection.encounters %}
+          <li>
+            <time datetime="{{ entry.date.isoformat() }}">{{ entry.date | human_date }}</time>
+            <a href="{{ entry_url(entry.id) }}">{{ entry.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty-state">No cat encounters recorded yet.</p>
+    {% endif %}
+  </section>
+{% endblock %}

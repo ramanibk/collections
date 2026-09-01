@@ -1,0 +1,8 @@
+.observation-grid,
+.entry-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md); }
+.observation-card a { display: block; text-decoration: none; }
+.observation-card img,
+.entry-gallery img { display: block; width: 100%; height: auto; background: var(--color-surface); }
+.observation-card__details { display: grid; padding-top: var(--space-sm); font-size: 0.9rem; }
+.observation-card__details time { color: var(--color-text); }
+.entry-gallery figure { margin: 0; }

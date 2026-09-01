@@ -1,0 +1,11 @@
+site:
+  title: Ramani
+  subtitle: Field notes, photographs, and things made.
+  base_url: ""
+  recent_entries: 5
+
+build:
+  output_dir: public
+
+clouds:
+  show_unobserved_genera: false

@@ -1,0 +1,20 @@
+:root {
+  --color-bg: #f5f2e9;
+  --color-surface: #ebe7dc;
+  --color-text: #20231f;
+  --color-muted: #5d6158;
+  --color-border: #aaa99e;
+  --color-link: #294c38;
+  --color-focus: #8a4b20;
+  --font-body: Georgia, "Times New Roman", serif;
+  --font-heading: Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --space-xs: 0.4rem;
+  --space-sm: 0.8rem;
+  --space-md: 1.5rem;
+  --space-lg: 3rem;
+  --space-xl: 6rem;
+  --content-width: 46rem;
+  --wide-width: 68rem;
+  --rule: 1px solid var(--color-border);
+}

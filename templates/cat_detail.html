@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <header class="introduction">
+    <p class="eyebrow"><a href="{{ category_url('cats') }}">My Cats</a></p>
+    <h1>{{ cat.name }}</h1>
+    <p class="subtitle">{{ cat.entry_count }} entr{% if cat.entry_count == 1 %}y{% else %}ies{% endif %} and {{ cat.photograph_count }} photograph{% if cat.photograph_count != 1 %}s{% endif %}</p>
+  </header>
+
+  {% if cat.entries %}
+    <section aria-labelledby="record-heading">
+      <h2 id="record-heading">Record</h2>
+      <dl class="record-summary">
+        <div><dt>First entry</dt><dd>{{ cat.first_entry | human_date }}</dd></div>
+        <div><dt>Most recent</dt><dd>{{ cat.most_recent_entry | human_date }}</dd></div>
+      </dl>
+    </section>
+
+    {% if cat.photographs %}
+      <section aria-labelledby="photographs-heading">
+        <h2 id="photographs-heading">Photographs</h2>
+        <div class="entry-gallery">
+          {% for photograph in cat.photographs %}
+            <figure>
+              <a href="{{ entry_url(photograph.entry.id) }}">
+                <img src="{{ media_url(photograph.entry.id, photograph.filename) }}" alt="{{ photograph.entry.get('image_alt', photograph.entry.title) }}" loading="lazy">
+              </a>
+            </figure>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    <section aria-labelledby="entries-heading">
+      <h2 id="entries-heading">Entries</h2>
+      <ul class="recent-entries">
+        {% for entry in cat.entries %}
+          <li>
+            <time datetime="{{ entry.date.isoformat() }}">{{ entry.date | human_date }}</time>
+            <a href="{{ entry_url(entry.id) }}">{{ entry.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% else %}
+    <section aria-label="Empty profile">
+      <p class="empty-state">No entries for {{ cat.name }} yet.</p>
+    </section>
+  {% endif %}
+{% endblock %}
