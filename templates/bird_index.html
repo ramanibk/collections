@@ -1,32 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <header class="introduction">
-    <p class="eyebrow"><a href="{{ observe_url() }}">Observe</a></p>
-    <h1>Bird Notebook</h1>
-    <p class="subtitle">Bird sightings and the species I am learning to recognize.</p>
-  </header>
-
-  <section aria-labelledby="notebook-summary-heading">
-    <h2 id="notebook-summary-heading">Notebook Summary</h2>
-    <dl class="statistics statistics--compact">
-      <div><dt>total observations</dt><dd>{{ notebook.statistics.total_observations }}</dd></div>
-      <div><dt>unique species</dt><dd>{{ notebook.statistics.unique_species }}</dd></div>
-      <div><dt>confirmed IDs</dt><dd>{{ notebook.statistics.confirmed_identifications }}</dd></div>
-      <div><dt>tentative IDs</dt><dd>{{ notebook.statistics.tentative_identifications }}</dd></div>
-      <div><dt>unknown IDs</dt><dd>{{ notebook.statistics.unknown_identifications }}</dd></div>
-    </dl>
-  </section>
-
-  <section aria-labelledby="identified-species-heading">
-    <h2 id="identified-species-heading">Identified Species</h2>
+  <div class="contents-panel">
+    <header class="contents-panel__heading"><h1>birds</h1><p>{{ notebook.statistics.total_observations }} sightings / {{ notebook.statistics.unique_species }} species</p></header>
     {% if notebook.species_pages %}
-      <ul class="taxonomy-list">
+      <ul class="contents-list">
         {% for species in notebook.species_pages %}
           <li>
             <a href="{{ bird_species_url(species.common_name) }}">
               <span>{{ species.common_name }}</span>
-              <span>{{ species.sighting_count }} sighting{% if species.sighting_count != 1 %}s{% endif %}</span>
+              <small>{{ species.sighting_count }} sighting{% if species.sighting_count != 1 %}s{% endif %}</small>
             </a>
           </li>
         {% endfor %}
@@ -34,13 +17,13 @@
     {% else %}
       <p class="empty-state">No bird species have been identified yet.</p>
     {% endif %}
-  </section>
+  </div>
 
   {% if notebook.unidentified %}
     <section aria-labelledby="unidentified-heading">
       <h2 id="unidentified-heading">Unidentified</h2>
       <div class="observation-grid">
-        {% for entry in notebook.unidentified %}
+        {% for entry in notebook.unidentified[:6] %}
           <article class="observation-card">
             <a href="{{ entry_url(entry.id) }}">
               {% if entry.cover %}
@@ -57,4 +40,8 @@
       </div>
     </section>
   {% endif %}
+
+  {% set photo_grid_id = 'recent-birds-heading' %}
+  {% set photo_grid_heading = 'Recent Photographs' %}
+  {% include '_photo_grid.html' %}
 {% endblock %}

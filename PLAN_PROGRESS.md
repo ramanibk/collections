@@ -34,7 +34,7 @@ Status meanings:
 | 8 | Cats / Making / Curiosities | **Complete** | Cats index with exactly three permanent profiles (Gwen, Billy, and Jet), combined entry/photo histories, and encounters; Making index, case-insensitive craft groups, craft pages, and metadata-rich permanent project pages; flexible chronological Curiosities index; category-specific validation | Collection derivation and build integration tests pass; empty states and responsive layouts are browser-verified |
 | 9 | Journal and alphabetical index | **Complete** | Site-wide reverse-chronological Journal grouped by year and month; yearly archive pages with entry/category/photo summaries; concise alphabetical index of major categories, observed cloud genera and bird species, fixed cat profiles, and craft types | Archive/index derivation and base-path build tests pass; desktop and mobile browser checks found no overflow or console errors |
 | 10 | CLI creation workflow | **Complete** | Reusable creation functions plus `journal.py` commands for interactive add, build, preview, validate, and stats; safe media copying; collision handling; permanent ID high-water marks | CLI and creation tests pass; the real validate and build commands succeed |
-| 11 | Styling and responsive design | **Complete** | Six planned CSS modules provide the field-notebook palette, editorial typography, layout, galleries, visible focus treatment, skip link, and desktop/tablet/phone breakpoints | Browser review at 1280 px and 390 px found all assets loaded, correct landmarks, no overflow, and no console errors |
+| 11 | Styling and responsive design | **Complete** | Six planned CSS modules plus local font declarations provide the field-notebook palette, Alegreya reading face, IBM Plex Mono labels, compact layout, galleries, visible focus treatment, skip link, and desktop/tablet/phone breakpoints | Browser review at 1280 px and 390 px found all assets loaded, correct landmarks, no overflow, and no console errors; the empty desktop homepage fits within one 1280×800 viewport |
 | 12 | Tests | **Complete** | 61 tests cover configuration, parsing, models, loading, validation, permanent IDs, creation, CLI behavior, URLs, statistics, safe builds, all collection pages, responsive asset wiring, and deployment configuration | Full suite passes on the completed implementation |
 | 13 | GitHub Pages workflow | **Complete** | Modern two-job Pages workflow installs Python 3.12, tests, validates, builds, uploads `public/`, and deploys with least-privilege job permissions | Workflow structure and current Pages action versions are covered by deployment tests |
 | 14 | README and cleanup | **Complete** | Practical setup, authoring, content schema, IDs, configuration, base paths, deployment, customization, and extension documentation; About and 404 pages; legacy facade removed | Final compile, test, validation, build, generated-tree inspection, browser review, and whitespace check pass |
@@ -49,7 +49,7 @@ Python compilation passed
 git diff --check passed
 Real project validation passed (0 errors, 0 warnings)
 Real project build passed (13 pages plus 404.html, 0 entries, 0 media)
-Homepage, About, and 404 rendering passed at desktop and mobile sizes with all six stylesheets, no console errors, and no overflow
+Homepage, About, and 404 rendering passed at desktop and mobile sizes with all seven stylesheets, no console errors, and no overflow
 ```
 
 The complete `journal.py` command surface is available. `python build.py`
@@ -66,6 +66,19 @@ Whenever a phase changes:
 
 ## Activity log
 
+- **2026-09-02 — Contents-and-picture-grid revision.** Removed the global top
+  navigation and outer frame, widened the shared notebook gutter, moved its
+  separator between annotations and content, and converted the homepage and
+  collection indexes to compact table-of-contents rows. Photograph surfaces now
+  show at most six square images in a three-by-two grid; six temporary CC0/public
+  domain images make the empty archive's layout visible.
+- **2026-09-01 — Compact notebook design added.** Reworked the visual system
+  around locally hosted Alegreya and IBM Plex Mono, a Public Domain
+  Review-inspired ink-and-paper palette, clean top and left notebook margins,
+  sparse handwritten-style annotations, a consistent gutter across every page,
+  smaller headings, compact mobile navigation, and a three-column desktop
+  homepage. The empty homepage now requires no scrolling at 1280×800 and about
+  one compact scroll at 390 px, with no overflow or console errors.
 - **2026-09-01 — Phases 10–14 completed.** Added reusable entry creation,
   permanent ID high-water marks, interactive CLI commands, preview serving,
   CLI/deployment tests, modular responsive styling, current GitHub Pages

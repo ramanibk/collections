@@ -1,61 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <header class="introduction">
-    <p class="eyebrow">Personal archive</p>
-    <h1>{{ site.title | upper }}</h1>
-    <p class="subtitle">{{ site.subtitle }}</p>
-  </header>
-
-  <section aria-labelledby="collection-heading">
-    <h2 id="collection-heading">The Collection</h2>
-    <dl class="statistics">
-      <div><dt>cloud sightings</dt><dd>{{ statistics.cloud_observations }}</dd></div>
-      <div><dt>bird species</dt><dd>{{ statistics.unique_bird_species }}</dd></div>
-      <div><dt>cat photographs</dt><dd>{{ statistics.cat_photographs }}</dd></div>
-      <div><dt>projects made</dt><dd>{{ statistics.project_count }}</dd></div>
-    </dl>
-  </section>
-
-  <section aria-labelledby="explore-heading">
-    <h2 id="explore-heading">Explore</h2>
-    <nav class="collection-nav" aria-label="Collection sections">
+  <div class="contents-panel">
+    <nav class="contents-list" aria-label="Contents">
       <a href="{{ category_url('clouds') }}">
-        <span><strong>Cloud Atlas</strong><small>A growing catalogue of clouds I've observed.</small></span>
-        <span aria-label="{{ statistics.cloud_observations }} cloud observations">{{ statistics.cloud_observations }} →</span>
+        <span class="contents-list__title">clouds</span><small>{{ statistics.cloud_observations }} sighting{% if statistics.cloud_observations != 1 %}s{% endif %}</small>
       </a>
       <a href="{{ category_url('birds') }}">
-        <span><strong>Bird Notebook</strong><small>Species I'm learning to recognize.</small></span>
-        <span aria-label="{{ statistics.unique_bird_species }} bird species">{{ statistics.unique_bird_species }} →</span>
+        <span class="contents-list__title">birds</span><small>{{ statistics.bird_observations }} sighting{% if statistics.bird_observations != 1 %}s{% endif %}</small>
       </a>
       <a href="{{ category_url('cats') }}">
-        <span><strong>Cats</strong><small>My cats and cats encountered.</small></span>
-        <span aria-label="{{ statistics.cat_entries }} cat entries">{{ statistics.cat_entries }} →</span>
+        <span class="contents-list__title">cats</span><small>{{ statistics.cat_photographs }} photograph{% if statistics.cat_photographs != 1 %}s{% endif %}</small>
       </a>
       <a href="{{ category_url('making') }}">
-        <span><strong>Making</strong><small>Embroidery and other small projects.</small></span>
-        <span aria-label="{{ statistics.project_count }} projects">{{ statistics.project_count }} →</span>
+        <span class="contents-list__title">making</span><small>{{ statistics.project_count }} project{% if statistics.project_count != 1 %}s{% endif %}</small>
       </a>
       <a href="{{ category_url('curiosities') }}">
-        <span><strong>Curiosities</strong><small>Things that don't belong anywhere else.</small></span>
-        <span aria-label="{{ statistics.curiosity_count }} curiosities">{{ statistics.curiosity_count }} →</span>
+        <span class="contents-list__title">curiosities</span><small>{{ statistics.curiosity_count }} entr{% if statistics.curiosity_count == 1 %}y{% else %}ies{% endif %}</small>
       </a>
+      <a href="{{ journal_url() }}"><span class="contents-list__title">journal</span><small>{{ statistics.total_entry_count }} entr{% if statistics.total_entry_count == 1 %}y{% else %}ies{% endif %}</small></a>
+      <a href="{{ index_url() }}"><span class="contents-list__title">index</span><small>alphabetical</small></a>
+      <a href="{{ about_url() }}"><span class="contents-list__title">about</span><small>about this archive</small></a>
     </nav>
-  </section>
+  </div>
 
-  <section aria-labelledby="recent-heading">
-    <h2 id="recent-heading">Recently Added</h2>
-    {% if recent_entries %}
-      <ol class="recent-entries">
-        {% for entry in recent_entries %}
-          <li>
-            <time datetime="{{ entry.date.isoformat() }}">{{ entry.date.strftime('%d %b %Y') | upper }}</time>
-            <a href="{{ entry_url(entry.id) }}">{{ entry.title }}</a>
-          </li>
-        {% endfor %}
-      </ol>
-    {% else %}
-      <p class="empty-state">The archive is ready for its first field note.</p>
-    {% endif %}
-  </section>
 {% endblock %}

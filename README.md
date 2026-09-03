@@ -101,7 +101,7 @@ tags:
 A broad field of rounded cloudlets appeared before sunset.
 ```
 
-All entries require `id`, `title`, `date`, and `category`. Common optional fields are `type`, `location`, `cover`, `favorite`, `tags`, `status`, and `image_alt`.
+All entries require `id`, `title`, `date`, and `category`. Common optional fields are `type`, `location`, `cover`, `favorite`, `tags`, `status`, `image_alt`, and `margin_note`. The last field adds a short handwritten-style note to the page margin; omit it to leave an entry's margin quiet.
 
 Category-specific fields:
 
@@ -156,6 +156,7 @@ The generated `public/` directory does not need to be committed.
 ## Customizing the site
 
 - Change colors, spacing, fonts, and widths in `static/css/variables.css`.
+- Change self-hosted font declarations in `static/css/fonts.css`; font files and their Open Font License texts live in `static/fonts/`.
 - Change global layout in `static/css/layout.css`, type in `typography.css`, image grids in `gallery.css`, and breakpoints in `responsive.css`.
 - Change shared navigation and metadata in `templates/base.html`; change individual pages in their corresponding templates.
 - Change derived counts in `journal/stats.py`, routes in `journal/urls.py`, and build orchestration in `journal/builder.py`.

@@ -20,7 +20,7 @@
       <section aria-labelledby="photographs-heading">
         <h2 id="photographs-heading">Photographs</h2>
         <div class="entry-gallery">
-          {% for photograph in cat.photographs %}
+          {% for photograph in cat.photographs[:6] %}
             <figure>
               <a href="{{ entry_url(photograph.entry.id) }}">
                 <img src="{{ media_url(photograph.entry.id, photograph.filename) }}" alt="{{ photograph.entry.get('image_alt', photograph.entry.title) }}" loading="lazy">

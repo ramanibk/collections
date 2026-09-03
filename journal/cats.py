@@ -84,7 +84,7 @@ def build_cat_collection(entries: Iterable[ContentEntry]) -> CatCollection:
         photographs = tuple(
             CatPhotograph(entry, filename)
             for entry in ordered
-            for filename in entry.images
+            for filename in reversed(entry.images)
         )
         profiles.append(
             CatProfile(

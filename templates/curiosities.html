@@ -1,26 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <header class="introduction">
-    <p class="eyebrow"><a href="{{ observe_url() }}">Observe</a></p>
-    <h1>Curiosities</h1>
-    <p class="subtitle">Found objects, textures, traces, and things that resist easy classification.</p>
-  </header>
-
-  <section aria-labelledby="curiosity-summary-heading">
-    <h2 id="curiosity-summary-heading">Collection Summary</h2>
-    <dl class="statistics statistics--compact">
-      <div><dt>entries</dt><dd>{{ collection.entry_count }}</dd></div>
-      <div><dt>photographs</dt><dd>{{ collection.photograph_count }}</dd></div>
-      <div><dt>favorites</dt><dd>{{ collection.favorite_count }}</dd></div>
-    </dl>
-  </section>
+  <div class="contents-panel">
+    <header class="contents-panel__heading"><h1>curiosities</h1><p>{{ collection.entry_count }} entries / {{ collection.photograph_count }} photographs</p></header>
+  </div>
 
   <section aria-labelledby="finds-heading">
     <h2 id="finds-heading">Finds</h2>
     {% if collection.entries %}
       <div class="observation-grid">
-        {% for entry in collection.entries %}
+        {% for entry in collection.entries[:6] %}
           <article class="observation-card">
             <a href="{{ entry_url(entry.id) }}">
               {% if entry.cover %}<img src="{{ media_url(entry.id, entry.cover) }}" alt="{{ entry.get('image_alt', entry.title) }}" loading="lazy">{% endif %}
@@ -37,4 +26,8 @@
       <p class="empty-state">No curiosities recorded yet.</p>
     {% endif %}
   </section>
+
+  {% set photo_grid_id = 'recent-curiosities-heading' %}
+  {% set photo_grid_heading = 'Recent Photographs' %}
+  {% include '_photo_grid.html' %}
 {% endblock %}

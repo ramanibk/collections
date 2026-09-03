@@ -1,30 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <header class="introduction">
-    <h1>Making</h1>
-    <p class="subtitle">Projects, materials, experiments, and things made by hand.</p>
-  </header>
-
-  <section aria-labelledby="making-summary-heading">
-    <h2 id="making-summary-heading">Workshop Summary</h2>
-    <dl class="statistics statistics--compact">
-      <div><dt>projects</dt><dd>{{ collection.total_projects }}</dd></div>
-      <div><dt>completed</dt><dd>{{ collection.completed_projects }}</dd></div>
-      <div><dt>crafts</dt><dd>{{ collection.craft_pages | length }}</dd></div>
-    </dl>
-  </section>
-
-  <section aria-labelledby="crafts-heading">
-    <h2 id="crafts-heading">Crafts</h2>
+  <div class="contents-panel">
+    <header class="contents-panel__heading"><h1>making</h1><p>{{ collection.total_projects }} projects / {{ collection.craft_pages | length }} crafts</p></header>
     {% if collection.craft_pages %}
       <div class="taxonomy-groups">
         {% for craft in collection.craft_pages %}
           <section class="taxonomy-group" aria-labelledby="craft-{{ craft.name | slugify }}">
             <h3 id="craft-{{ craft.name | slugify }}"><a href="{{ craft_url(craft.name) }}">{{ craft.name }}</a></h3>
-            <ul class="taxonomy-list">
+            <ul class="contents-list">
               {% for project in craft.projects %}
-                <li><a href="{{ entry_url(project.id) }}"><span>{{ project.title }}</span><span>{{ project.metadata.status or 'status not recorded' }}</span></a></li>
+                <li><a href="{{ entry_url(project.id) }}"><span>{{ project.title }}</span><small>{{ project.metadata.status or 'status not recorded' }}</small></a></li>
               {% endfor %}
             </ul>
           </section>
@@ -33,7 +19,7 @@
     {% else %}
       <p class="empty-state">No craft projects recorded yet.</p>
     {% endif %}
-  </section>
+  </div>
 
   {% if collection.uncategorized_projects %}
     <section aria-labelledby="other-projects-heading">
@@ -45,4 +31,8 @@
       </ul>
     </section>
   {% endif %}
+
+  {% set photo_grid_id = 'recent-projects-heading' %}
+  {% set photo_grid_heading = 'Recent Photographs' %}
+  {% include '_photo_grid.html' %}
 {% endblock %}

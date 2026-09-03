@@ -24,6 +24,7 @@ type: observation
 category: clouds
 cloud_genus: cumulus
 cover: 01.jpg
+margin_note: check the western sky
 ---
 A small cloud.
 """,
@@ -57,8 +58,22 @@ def test_build_generates_homepage_assets_and_id_based_media(tmp_path: Path) -> N
     assert result.media_count == 1
     assert result.statistics.cloud_observations == 1
     assert "/field-notes/static/css/base.css" in homepage
-    assert "/field-notes/entry/obs-000001/" in homepage
-    assert "Cumulus at Noon" in homepage
+    assert "/field-notes/observe/clouds/" in homepage
+    assert '<nav class="contents-list" aria-label="Contents">' in homepage
+    assert "A test archive." in homepage
+    assert "Personal archive" not in homepage
+    assert "<h1>FIELD NOTES</h1>" not in homepage
+    assert '<header class="site-header">' in homepage
+    assert '<a class="site-name" href="/field-notes/">field notes</a>' in homepage
+    assert '<nav class="breadcrumbs"' not in homepage
+    assert "/field-notes/static/icons/" not in homepage
+    cloud_page = (root / "public/observe/clouds/index.html").read_text(encoding="utf-8")
+    assert '<div class="picture-grid">' in cloud_page
+    assert "/field-notes/media/obs-000001/01.jpg" in cloud_page
+    assert '<nav class="breadcrumbs" aria-label="Breadcrumb">' in cloud_page
+    assert '<a href="/field-notes/">home</a>' in cloud_page
+    assert '<a href="/field-notes/observe/">observe</a>' in cloud_page
+    assert '<span aria-current="page">clouds</span>' in cloud_page
     assert (root / "public/media/obs-000001/01.jpg").read_bytes() == b"test image"
     assert (root / "public/.nojekyll").exists()
     assert (root / "public/about/index.html").exists()
@@ -73,6 +88,8 @@ def test_build_generates_homepage_assets_and_id_based_media(tmp_path: Path) -> N
     assert "/field-notes/entry/obs-000001/" in genus_page
     entry_page = (root / "public/entry/obs-000001/index.html").read_text(encoding="utf-8")
     assert "A small cloud." in entry_page
+    assert "clouds / obs-000001" not in entry_page
+    assert "check the western sky" not in entry_page
     bird_index = (root / "public/observe/birds/index.html").read_text(encoding="utf-8")
     assert "Bird Notebook" in bird_index
     assert "No bird species have been identified yet." in bird_index
@@ -92,6 +109,19 @@ def test_build_generates_homepage_assets_and_id_based_media(tmp_path: Path) -> N
     alphabetical = (root / "public/index/index.html").read_text(encoding="utf-8")
     assert "Cumulus" in alphabetical
     assert "Gwen" in alphabetical
+
+
+def test_entry_gallery_places_latest_numbered_photo_first(tmp_path: Path) -> None:
+    root = prepare_project(tmp_path)
+    entry_dir = root / "content/clouds/note"
+    for number in range(2, 7):
+        (entry_dir / f"{number:02}.jpg").write_bytes(b"test image")
+
+    build_site(root)
+
+    page = (root / "public/entry/obs-000001/index.html").read_text(encoding="utf-8")
+    positions = [page.index(f"/{number:02}.jpg") for number in range(6, 0, -1)]
+    assert positions == sorted(positions)
 
 
 def test_build_generates_bird_index_species_pages_and_unknown_section(tmp_path: Path) -> None:

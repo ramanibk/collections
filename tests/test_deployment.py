@@ -22,6 +22,7 @@ def test_pages_workflow_tests_validates_builds_and_deploys_public() -> None:
 def test_all_planned_stylesheets_exist_and_are_linked() -> None:
     base = (REPOSITORY / "templates/base.html").read_text(encoding="utf-8")
     names = (
+        "fonts.css",
         "variables.css",
         "base.css",
         "layout.css",

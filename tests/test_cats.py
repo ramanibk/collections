@@ -48,8 +48,8 @@ def test_profile_combines_case_insensitive_entries_and_photographs() -> None:
     assert [entry.id for entry in gwen.entries] == ["cat-2", "cat-1"]
     assert [(photo.entry.id, photo.filename) for photo in gwen.photographs] == [
         ("cat-2", "portrait.jpg"),
-        ("cat-1", "01.jpg"),
         ("cat-1", "02.jpg"),
+        ("cat-1", "01.jpg"),
     ]
     assert gwen.first_entry.isoformat() == "2026-05-14"
     assert gwen.most_recent_entry.isoformat() == "2026-08-29"

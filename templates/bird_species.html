@@ -21,7 +21,7 @@
   <section aria-labelledby="sightings-heading">
     <h2 id="sightings-heading">Sightings</h2>
     <div class="observation-grid">
-      {% for entry in species.sightings %}
+      {% for entry in species.sightings[:6] %}
         <article class="observation-card">
           <a href="{{ entry_url(entry.id) }}">
             {% if entry.cover %}

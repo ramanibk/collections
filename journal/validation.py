@@ -70,6 +70,7 @@ COMMON_FIELDS = frozenset(
         "tags",
         "status",
         "image_alt",
+        "margin_note",
         "sample",
     }
 )

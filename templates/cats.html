@@ -1,33 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <header class="introduction">
-    <h1>Cats</h1>
-    <p class="subtitle">Gwen, Billy, Jet, and occasional cats met along the way.</p>
-  </header>
-
-  <section aria-labelledby="cats-summary-heading">
-    <h2 id="cats-summary-heading">Collection Summary</h2>
-    <dl class="statistics statistics--compact">
-      <div><dt>my cats</dt><dd>{{ collection.profiles | length }}</dd></div>
-      <div><dt>entries</dt><dd>{{ collection.total_entries }}</dd></div>
-      <div><dt>photographs</dt><dd>{{ collection.total_photographs }}</dd></div>
-    </dl>
-  </section>
-
-  <section aria-labelledby="my-cats-heading">
-    <h2 id="my-cats-heading">My Cats</h2>
-    <ul class="taxonomy-list">
+  <div class="contents-panel">
+    <header class="contents-panel__heading"><h1>cats</h1><p>{{ collection.total_entries }} entries / {{ collection.total_photographs }} photographs</p></header>
+    <ul class="contents-list">
       {% for cat in collection.profiles %}
         <li>
           <a href="{{ cat_url(cat.name) }}">
-            <span>{{ cat.name }}</span>
-            <span>{{ cat.entry_count }} entr{% if cat.entry_count == 1 %}y{% else %}ies{% endif %} · {{ cat.photograph_count }} photo{% if cat.photograph_count != 1 %}s{% endif %}</span>
+            <span>{{ cat.name | lower }}</span>
+            <small>{{ cat.entry_count }} entr{% if cat.entry_count == 1 %}y{% else %}ies{% endif %} · {{ cat.photograph_count }} photo{% if cat.photograph_count != 1 %}s{% endif %}</small>
           </a>
         </li>
       {% endfor %}
     </ul>
-  </section>
+  </div>
 
   <section aria-labelledby="encounters-heading">
     <h2 id="encounters-heading">Encounters</h2>
@@ -44,4 +30,8 @@
       <p class="empty-state">No cat encounters recorded yet.</p>
     {% endif %}
   </section>
+
+  {% set photo_grid_id = 'recent-cats-heading' %}
+  {% set photo_grid_heading = 'Recent Photographs' %}
+  {% include '_photo_grid.html' %}
 {% endblock %}

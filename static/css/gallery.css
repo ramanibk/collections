@@ -1,8 +1,13 @@
 .observation-grid,
-.entry-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md); }
+.entry-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.35rem; }
 .observation-card a { display: block; text-decoration: none; }
 .observation-card img,
-.entry-gallery img { display: block; width: 100%; height: auto; background: var(--color-surface); }
+.entry-gallery img { display: block; width: 100%; aspect-ratio: 1; height: auto; object-fit: cover; background: var(--color-surface); }
 .observation-card__details { display: grid; padding-top: var(--space-sm); font-size: 0.9rem; }
 .observation-card__details time { color: var(--color-text); }
 .entry-gallery figure { margin: 0; }
+.picture-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.35rem; }
+.picture-grid a { display: block; aspect-ratio: 1; overflow: hidden; background: var(--color-surface); }
+.picture-grid img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 160ms ease; }
+.picture-grid a:hover img { transform: scale(1.025); }
+.photo-grid-section { width: min(100%, 52rem); margin: var(--space-xl) auto 0; }

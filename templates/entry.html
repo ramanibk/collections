@@ -13,7 +13,7 @@
       <section aria-labelledby="gallery-heading">
         <h2 id="gallery-heading">Photographs</h2>
         <div class="entry-gallery">
-          {% for filename in entry.images %}
+          {% for filename in entry.images[:6] | reverse %}
             <figure>
               <img src="{{ media_url(entry.id, filename) }}" alt="{{ entry.get('image_alt', entry.title) }}" loading="lazy">
             </figure>

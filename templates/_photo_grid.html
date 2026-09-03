@@ -1,0 +1,19 @@
+<section class="photo-grid-section" aria-labelledby="{{ photo_grid_id }}">
+  <h2 id="{{ photo_grid_id }}">{{ photo_grid_heading }}</h2>
+  <div class="picture-grid">
+    {% if photo_entries %}
+      {% for item in photo_entries[:6] %}
+        <a href="{{ entry_url(item.id) }}">
+          <img src="{{ media_url(item.id, item.cover) }}" alt="{{ item.get('image_alt', item.title) }}" loading="lazy">
+        </a>
+      {% endfor %}
+    {% else %}
+      <a href="{{ category_url('clouds') }}"><img src="{{ static_url('images/samples/lenticular-clouds.jpg') }}" alt="Lenticular clouds over a desert landscape"></a>
+      <a href="{{ category_url('curiosities') }}"><img src="{{ static_url('images/samples/shell.jpg') }}" alt="An open scallop shell"></a>
+      <a href="{{ category_url('making') }}"><img src="{{ static_url('images/samples/embroidery.jpg') }}" alt="Detail of historical embroidery"></a>
+      <a href="{{ category_url('cats') }}"><img src="{{ static_url('images/samples/cat.jpg') }}" alt="A cat resting on a couch"></a>
+      <a href="{{ category_url('birds') }}"><img src="{{ static_url('images/samples/bird.jpg') }}" alt="A bird perched outdoors"></a>
+      <a href="{{ category_url('clouds') }}"><img src="{{ static_url('images/samples/cloud.jpg') }}" alt="A single cloud in a blue sky"></a>
+    {% endif %}
+  </div>
+</section>
