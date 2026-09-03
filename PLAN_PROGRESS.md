@@ -27,12 +27,12 @@ Status meanings:
 | 1 | Project skeleton and configuration | **Complete** | Repository directories, `journal` package, `config.yaml`, typed config loader, dependency list, test configuration, and ignore rules | Configuration tests pass; project modules compile |
 | 2 | Content parser and models | **Complete** | Typed common/category metadata models, YAML frontmatter parsing, Markdown rendering, ISO date normalization, slugging, image discovery, raw metadata preservation, and centralized cloud taxonomy | Parser/model tests pass; malformed input and category-specific cases are covered |
 | 3 | Validation and loading | **Complete** | Dedicated deterministic loader and structured validation report; aggregate parse errors; duplicate-ID, category, cover/media, confidence, and unknown-field checks; compatibility adapter for the prototype builder | Loader and validation tests pass; errors and warnings retain exact source paths |
-| 4 | URL generation and base path handling | **Complete** | Central helpers cover home, categories, permanent entries, cloud genera, bird species, cats, crafts, years, static assets, and ID-based media; every helper supports root or GitHub Pages base paths | URL and route-output tests pass for root and `/field-notes` deployment |
+| 4 | URL generation and base path handling | **Complete** | Central helpers cover home, categories, permanent entries, cloud genera, bird species nested under Curiosities, cats, crafts, all posts, static assets, and ID-based media; every helper supports root or GitHub Pages base paths | URL and route-output tests pass for root and `/field-notes` deployment |
 | 5 | Basic renderer and homepage | **Complete** | Jinja renderer, safe staged builder, derived homepage statistics, semantic base/home templates, recent entries, static/media copying, `.nojekyll`, and concise build output | Integration tests and the real project build pass; browser check found both stylesheets, correct landmarks, no overflow, and no console errors |
 | 6 | Cloud Atlas | **Complete** | Observe landing page; Cloud Atlas summary; configurable taxonomy grouping; observed-genus pages with first/latest dates, species counts, chronological sighting grids, accessible image fallbacks, and links to generated permanent entry pages | Cloud derivation and build integration tests pass; real empty-state build and browser rendering pass without console errors or overflow |
-| 7 | Bird Notebook | **Complete** | Bird summary statistics; case-insensitive alphabetical species grouping; identified-species pages with scientific names, observation dates, counts, and galleries; unidentified-observation section; accessible empty states | Bird derivation and build integration tests pass; real empty-state page passes desktop and mobile browser checks without console errors or overflow |
-| 8 | Cats / Making / Curiosities | **Complete** | Cats index with exactly three permanent profiles (Gwen, Billy, and Jet), combined entry/photo histories, and encounters; Making index, case-insensitive craft groups, craft pages, and metadata-rich permanent project pages; flexible chronological Curiosities index; category-specific validation | Collection derivation and build integration tests pass; empty states and responsive layouts are browser-verified |
-| 9 | Journal and alphabetical index | **Complete** | Site-wide reverse-chronological Journal grouped by year and month; yearly archive pages with entry/category/photo summaries; concise alphabetical index of major categories, observed cloud genera and bird species, fixed cat profiles, and craft types | Archive/index derivation and base-path build tests pass; desktop and mobile browser checks found no overflow or console errors |
+| 7 | Birds within Curiosities | **Complete** | Bird summary statistics and species detail pages are retained while the species list and unidentified observations are integrated into the Curiosities page | Bird derivation and merged-page build integration tests pass |
+| 8 | Cats / Crafts / Curiosities | **Complete** | Cats index with exactly three permanent profiles (Gwen, Billy, and Jet), combined entry/photo histories, and encounters; Crafts index, case-insensitive craft groups, craft pages, and metadata-rich permanent project pages; flexible Curiosities index with birds included; category-specific validation | Collection derivation and build integration tests pass; responsive layouts are browser-verified |
+| 9 | Sortable all-posts index | **Complete** | One All Posts page replaces separate Journal, yearly archive, and alphabetical index pages; accessible controls reorder the same list by reverse date or title | Base-path build tests cover the consolidated route and sorting hooks |
 | 10 | CLI creation workflow | **Complete** | Reusable creation functions plus `journal.py` commands for interactive add, build, preview, validate, and stats; safe media copying; collision handling; permanent ID high-water marks | CLI and creation tests pass; the real validate and build commands succeed |
 | 11 | Styling and responsive design | **Complete** | Six planned CSS modules plus local font declarations provide the field-notebook palette, Alegreya reading face, IBM Plex Mono labels, compact layout, galleries, visible focus treatment, skip link, and desktop/tablet/phone breakpoints | Browser review at 1280 px and 390 px found all assets loaded, correct landmarks, no overflow, and no console errors; the empty desktop homepage fits within one 1280×800 viewport |
 | 12 | Tests | **Complete** | 61 tests cover configuration, parsing, models, loading, validation, permanent IDs, creation, CLI behavior, URLs, statistics, safe builds, all collection pages, responsive asset wiring, and deployment configuration | Full suite passes on the completed implementation |
@@ -41,15 +41,15 @@ Status meanings:
 
 ## Verification snapshot
 
-As of 2026-09-01:
+As of 2026-09-03:
 
 ```text
-61 tests passed
+62 tests passed
 Python compilation passed
 git diff --check passed
 Real project validation passed (0 errors, 0 warnings)
-Real project build passed (13 pages plus 404.html, 0 entries, 0 media)
-Homepage, About, and 404 rendering passed at desktop and mobile sizes with all seven stylesheets, no console errors, and no overflow
+Real project build passed (11 pages plus 404.html, 0 entries, 0 media)
+Homepage, Curiosities, Crafts, All Posts, About, and 404 rendering passed at desktop and mobile sizes with aligned boundaries, no console errors, and no overflow
 ```
 
 The complete `journal.py` command surface is available. `python build.py`
@@ -66,6 +66,10 @@ Whenever a phase changes:
 
 ## Activity log
 
+- **2026-09-03 — Navigation consolidation.** Nested birds inside Curiosities,
+  renamed the public Making collection and routes to Crafts, replaced Journal
+  and Index with one sortable All Posts page, and aligned all main content to
+  the header and footer boundaries.
 - **2026-09-02 — Contents-and-picture-grid revision.** Removed the global top
   navigation and outer frame, widened the shared notebook gutter, moved its
   separator between annotations and content, and converted the homepage and

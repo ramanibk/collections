@@ -2,7 +2,7 @@
 
 {% block content %}
   <div class="contents-panel">
-    <header class="contents-panel__heading"><h1>making</h1><p>{{ collection.total_projects }} projects / {{ collection.craft_pages | length }} crafts</p></header>
+    <header class="contents-panel__heading"><h1>crafts</h1><p>{{ collection.total_projects }} projects / {{ collection.craft_pages | length }} crafts</p></header>
     {% if collection.craft_pages %}
       <div class="taxonomy-groups">
         {% for craft in collection.craft_pages %}

@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 from .birds import build_bird_notebook
-from .archives import build_journal_archive
 from .cats import build_cat_collection
 from .clouds import build_cloud_atlas
 from .config import JournalConfig, load_config
@@ -17,7 +16,6 @@ from .curiosities import build_curiosity_collection
 from .loader import load_content
 from .making import build_making_collection
 from .renderer import Renderer
-from .site_index import build_alphabetical_index
 from .stats import SiteStatistics, calculate_statistics
 from .validation import ValidationIssue, format_report
 from .urls import (
@@ -28,10 +26,8 @@ from .urls import (
     cloud_genus_url,
     craft_url,
     entry_url,
-    index_url,
-    journal_url,
     observe_url,
-    year_url,
+    posts_url,
 )
 
 
@@ -104,8 +100,8 @@ def build_site(project_root: Path, config_path: Optional[Path] = None) -> BuildR
     base_url = config.site.base_url
     observe_href = observe_url(base_url)
 
-    def category_photos(category: str):
-        return tuple(entry for entry in photo_entries if entry.category == category)[:6]
+    def category_photos(*categories: str):
+        return tuple(entry for entry in photo_entries if entry.category in categories)[:6]
 
     def category_breadcrumbs(category: str, current_label: str):
         if category in ("clouds", "birds", "curiosities"):
@@ -116,7 +112,10 @@ def build_site(project_root: Path, config_path: Optional[Path] = None) -> BuildR
         return ((current_label, None),)
 
     def entry_breadcrumbs(entry):
-        label = entry.category
+        label = {
+            "birds": "curiosities",
+            "making": "crafts",
+        }.get(entry.category, entry.category)
         trail = []
         if entry.category in ("clouds", "birds", "curiosities"):
             trail.append(("observe", observe_href))
@@ -135,14 +134,6 @@ def build_site(project_root: Path, config_path: Optional[Path] = None) -> BuildR
     cat_collection = build_cat_collection(loaded.entries)
     making_collection = build_making_collection(loaded.entries)
     curiosity_collection = build_curiosity_collection(loaded.entries)
-    journal_archive = build_journal_archive(loaded.entries)
-    alphabetical_index = build_alphabetical_index(
-        loaded.entries,
-        cloud_atlas,
-        bird_notebook,
-        cat_collection,
-        making_collection,
-    )
     output.parent.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(prefix=f".{output.name}-", dir=output.parent))
     try:
@@ -160,7 +151,7 @@ def build_site(project_root: Path, config_path: Optional[Path] = None) -> BuildR
             "observe.html",
             observe_url(),
             page_title=f"Observe — {config.site.title}",
-            page_description="Cloud, bird, and curiosity field observations.",
+            page_description="Clouds and a cabinet of natural curiosities.",
             statistics=statistics,
             photo_entries=photo_entries[:6],
             breadcrumbs=(("observe", None),),
@@ -190,21 +181,11 @@ def build_site(project_root: Path, config_path: Optional[Path] = None) -> BuildR
                 ),
                 current_section="observe",
             )
-        renderer.render(
-            "bird_index.html",
-            category_url("birds"),
-            page_title=f"Bird Notebook — {config.site.title}",
-            page_description="Bird sightings and identified species.",
-            notebook=bird_notebook,
-            photo_entries=category_photos("birds"),
-            breadcrumbs=category_breadcrumbs("birds", "birds"),
-            current_section="observe",
-        )
         for species in bird_notebook.species_pages:
             renderer.render(
                 "bird_species.html",
                 bird_species_url(species.common_name),
-                page_title=f"{species.common_name} — Bird Notebook — {config.site.title}",
+                page_title=f"{species.common_name} — Curiosities — {config.site.title}",
                 page_description=(
                     f"{species.sighting_count} {species.common_name} "
                     f"sighting{'s' if species.sighting_count != 1 else ''}."
@@ -212,7 +193,7 @@ def build_site(project_root: Path, config_path: Optional[Path] = None) -> BuildR
                 species=species,
                 breadcrumbs=(
                     ("observe", observe_href),
-                    ("birds", category_url("birds", base_url)),
+                    ("curiosities", category_url("curiosities", base_url)),
                     (species.common_name, None),
                 ),
                 current_section="observe",
@@ -246,25 +227,25 @@ def build_site(project_root: Path, config_path: Optional[Path] = None) -> BuildR
         renderer.render(
             "making.html",
             category_url("making"),
-            page_title=f"Making — {config.site.title}",
+            page_title=f"Crafts — {config.site.title}",
             page_description="Projects, materials, and things made by hand.",
             collection=making_collection,
             photo_entries=category_photos("making"),
-            breadcrumbs=category_breadcrumbs("making", "making"),
-            current_section="making",
+            breadcrumbs=category_breadcrumbs("making", "crafts"),
+            current_section="crafts",
         )
         for craft in making_collection.craft_pages:
             renderer.render(
                 "craft.html",
                 craft_url(craft.name),
-                page_title=f"{craft.name} — Making — {config.site.title}",
+                page_title=f"{craft.name} — Crafts — {config.site.title}",
                 page_description=f"{craft.project_count} {craft.name} projects.",
                 craft=craft,
                 breadcrumbs=(
-                    ("making", category_url("making", base_url)),
+                    ("crafts", category_url("making", base_url)),
                     (craft.name, None),
                 ),
-                current_section="making",
+                current_section="crafts",
             )
         renderer.render(
             "curiosities.html",
@@ -272,40 +253,25 @@ def build_site(project_root: Path, config_path: Optional[Path] = None) -> BuildR
             page_title=f"Curiosities — {config.site.title}",
             page_description="Finds and observations that resist easy classification.",
             collection=curiosity_collection,
-            photo_entries=category_photos("curiosities"),
+            notebook=bird_notebook,
+            combined_entry_count=curiosity_collection.entry_count + bird_notebook.statistics.total_observations,
+            combined_photograph_count=sum(
+                len(entry.images)
+                for entry in loaded.entries
+                if entry.category in ("curiosities", "birds")
+            ),
+            photo_entries=category_photos("curiosities", "birds"),
             breadcrumbs=category_breadcrumbs("curiosities", "curiosities"),
             current_section="observe",
         )
         renderer.render(
-            "journal.html",
-            journal_url(),
-            page_title=f"Journal — {config.site.title}",
-            page_description="A chronological record of the archive.",
-            archive=journal_archive,
-            breadcrumbs=(("journal", None),),
-            current_section="journal",
-        )
-        for year in journal_archive.years:
-            renderer.render(
-                "year.html",
-                year_url(year.year),
-                page_title=f"{year.year} — Journal — {config.site.title}",
-                page_description=f"{year.entry_count} archive entries from {year.year}.",
-                year=year,
-                breadcrumbs=(
-                    ("journal", journal_url(base_url)),
-                    (str(year.year), None),
-                ),
-                current_section="journal",
-            )
-        renderer.render(
-            "index.html",
-            index_url(),
-            page_title=f"Index — {config.site.title}",
-            page_description="An alphabetical guide to the archive.",
-            groups=alphabetical_index,
-            breadcrumbs=(("index", None),),
-            current_section="index",
+            "posts.html",
+            posts_url(),
+            page_title=f"All Posts — {config.site.title}",
+            page_description="Every archive post, sortable by date or title.",
+            posts=loaded.entries,
+            breadcrumbs=(("all posts", None),),
+            current_section="posts",
         )
         renderer.render(
             "about.html",
@@ -323,7 +289,7 @@ def build_site(project_root: Path, config_path: Optional[Path] = None) -> BuildR
                 page_description=entry.body_markdown.split("\n", 1)[0] or config.site.subtitle,
                 entry=entry,
                 breadcrumbs=entry_breadcrumbs(entry),
-                current_section=entry.category,
+                current_section="crafts" if entry.category == "making" else entry.category,
             )
         renderer.render_file(
             "404.html",

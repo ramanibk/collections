@@ -9,9 +9,9 @@ from .utils import slugify
 
 CATEGORY_PATHS = {
     "clouds": "/observe/clouds/",
-    "birds": "/observe/birds/",
+    "birds": "/observe/curiosities/",
     "cats": "/cats/",
-    "making": "/make/",
+    "making": "/crafts/",
     "curiosities": "/observe/curiosities/",
 }
 
@@ -58,7 +58,7 @@ def cloud_genus_url(genus: str, base_url: str = "") -> str:
 
 
 def bird_species_url(species: str, base_url: str = "") -> str:
-    return with_base_url(f"/observe/birds/{slugify(species)}/", base_url)
+    return with_base_url(f"/observe/curiosities/birds/{slugify(species)}/", base_url)
 
 
 def cat_url(cat_name: str, base_url: str = "") -> str:
@@ -66,19 +66,11 @@ def cat_url(cat_name: str, base_url: str = "") -> str:
 
 
 def craft_url(craft: str, base_url: str = "") -> str:
-    return with_base_url(f"/make/{slugify(craft)}/", base_url)
+    return with_base_url(f"/crafts/{slugify(craft)}/", base_url)
 
 
-def year_url(year: int, base_url: str = "") -> str:
-    return with_base_url(f"/journal/{int(year)}/", base_url)
-
-
-def journal_url(base_url: str = "") -> str:
-    return with_base_url("/journal/", base_url)
-
-
-def index_url(base_url: str = "") -> str:
-    return with_base_url("/index/", base_url)
+def posts_url(base_url: str = "") -> str:
+    return with_base_url("/posts/", base_url)
 
 
 def about_url(base_url: str = "") -> str:

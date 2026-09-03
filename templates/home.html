@@ -6,20 +6,16 @@
       <a href="{{ category_url('clouds') }}">
         <span class="contents-list__title">clouds</span><small>{{ statistics.cloud_observations }} sighting{% if statistics.cloud_observations != 1 %}s{% endif %}</small>
       </a>
-      <a href="{{ category_url('birds') }}">
-        <span class="contents-list__title">birds</span><small>{{ statistics.bird_observations }} sighting{% if statistics.bird_observations != 1 %}s{% endif %}</small>
-      </a>
       <a href="{{ category_url('cats') }}">
         <span class="contents-list__title">cats</span><small>{{ statistics.cat_photographs }} photograph{% if statistics.cat_photographs != 1 %}s{% endif %}</small>
       </a>
       <a href="{{ category_url('making') }}">
-        <span class="contents-list__title">making</span><small>{{ statistics.project_count }} project{% if statistics.project_count != 1 %}s{% endif %}</small>
+        <span class="contents-list__title">crafts</span><small>{{ statistics.project_count }} project{% if statistics.project_count != 1 %}s{% endif %}</small>
       </a>
       <a href="{{ category_url('curiosities') }}">
-        <span class="contents-list__title">curiosities</span><small>{{ statistics.curiosity_count }} entr{% if statistics.curiosity_count == 1 %}y{% else %}ies{% endif %}</small>
+        <span class="contents-list__title">curiosities</span><small>{{ statistics.curiosity_count + statistics.bird_observations }} entr{% if statistics.curiosity_count + statistics.bird_observations == 1 %}y{% else %}ies{% endif %}</small>
       </a>
-      <a href="{{ journal_url() }}"><span class="contents-list__title">journal</span><small>{{ statistics.total_entry_count }} entr{% if statistics.total_entry_count == 1 %}y{% else %}ies{% endif %}</small></a>
-      <a href="{{ index_url() }}"><span class="contents-list__title">index</span><small>alphabetical</small></a>
+      <a href="{{ posts_url() }}"><span class="contents-list__title">all posts</span><small>date / alphabetical</small></a>
       <a href="{{ about_url() }}"><span class="contents-list__title">about</span><small>about this archive</small></a>
     </nav>
   </div>

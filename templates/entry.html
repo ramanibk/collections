@@ -3,7 +3,7 @@
 {% block content %}
   <article class="entry">
     <header class="introduction">
-      <p class="eyebrow"><a href="{{ category_url(entry.category) }}">{{ entry.category | title }}</a></p>
+      <p class="eyebrow"><a href="{{ category_url(entry.category) }}">{% if entry.category == 'birds' %}Curiosities{% elif entry.category == 'making' %}Crafts{% else %}{{ entry.category | title }}{% endif %}</a></p>
       <h1>{{ entry.title }}</h1>
       <p class="entry-date"><time datetime="{{ entry.date.isoformat() }}">{{ entry.date | human_date }}</time></p>
       {% if entry.location %}<p>{{ entry.location }}</p>{% endif %}

@@ -2,7 +2,7 @@
 
 A local-first personal archive for observations, photographs, and creative work. Plain Markdown files with YAML frontmatter are the source of truth; a small Python application validates them and generates an ordinary static site in `public/`.
 
-The initial collections are Clouds, Birds, Cats, Making, Curiosities, and the site-wide chronological Journal. There is no database, CMS, JavaScript framework, or client-side rendering requirement.
+The public collections are Clouds, Cats, Crafts, and Curiosities, with bird observations nested inside Curiosities. A single All Posts page can sort every entry by date or alphabetically. There is no database, CMS, or JavaScript framework.
 
 ## Setup
 
@@ -57,6 +57,7 @@ content/                 Markdown entries and their original images
 journal/                 parsing, models, validation, derivation, CLI, and build logic
 templates/               Jinja page templates
 static/css/              design variables and modular stylesheets
+static/js/               small progressive enhancements such as post sorting
 tests/                    temporary-directory unit and integration tests
 .github/workflows/       GitHub Pages deployment
 config.yaml              site title, base URL, output, and taxonomy options
@@ -106,9 +107,9 @@ All entries require `id`, `title`, `date`, and `category`. Common optional field
 Category-specific fields:
 
 - Clouds: `cloud_genus`, `cloud_species`, `cloud_variety`, `supplementary_features`, `optical_phenomena`, `identification`, and `confidence`.
-- Birds: `common_name`, `scientific_name`, `identification`, `confidence`, and `count`.
+- Birds (shown within Curiosities): `common_name`, `scientific_name`, `identification`, `confidence`, and `count`.
 - Cats: `cat_name` and `relationship`. Named personal cats are Gwen, Billy, and Jet; other cats use `relationship: encounter`.
-- Making: `craft`, `status`, `started`, `completed`, and `materials`.
+- Crafts (stored with `category: making`): `craft`, `status`, `started`, `completed`, and `materials`.
 - Curiosities deliberately permit flexible extra metadata.
 
 Dates use `YYYY-MM-DD`. Confidence is an integer from 1 through 5. Supported image formats are JPEG, PNG, and WebP. When `image_alt` is absent, templates conservatively use the entry title.

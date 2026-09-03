@@ -1,8 +1,8 @@
 @media (max-width: 42rem) {
   :root { --space-lg: 1.35rem; --space-xl: 2rem; }
-  main { padding-inline: 0.75rem; }
   .site-header,
-  .site-footer { width: min(calc(100% - 3.5rem), var(--panel-width)); }
+  .site-footer,
+  main { width: min(calc(100% - 3.5rem), var(--panel-width)); }
   .site-header__identity { display: block; }
   .site-header__identity p { margin-top: var(--space-xs); text-align: left; }
   .contents-panel__heading { display: block; }
@@ -13,6 +13,11 @@
   .recent-entries li { grid-template-columns: 1fr; gap: 0; }
   .journal-list li { grid-template-columns: 2rem minmax(0, 1fr); gap: var(--space-sm); }
   .journal-list li > span { grid-column: 2; }
+  .posts-heading { display: block; }
+  .sort-controls { margin-top: var(--space-md); }
+  .posts-list li { grid-template-columns: minmax(0, 1fr) auto; gap: 0 var(--space-sm); }
+  .posts-list time { grid-column: 1 / -1; }
+  .posts-list li > span { grid-column: 2; grid-row: 2; }
   .collection-nav > a,
   .index-list a,
   .taxonomy-list a,

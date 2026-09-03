@@ -2,8 +2,34 @@
 
 {% block content %}
   <div class="contents-panel">
-    <header class="contents-panel__heading"><h1>curiosities</h1><p>{{ collection.entry_count }} entries / {{ collection.photograph_count }} photographs</p></header>
+    <header class="contents-panel__heading"><h1>curiosities</h1><p>{{ combined_entry_count }} entries / {{ combined_photograph_count }} photographs</p></header>
   </div>
+
+  <section aria-labelledby="birds-heading">
+    <h2 id="birds-heading">Birds</h2>
+    {% if notebook.species_pages %}
+      <ul class="contents-list">
+        {% for species in notebook.species_pages %}
+          <li>
+            <a href="{{ bird_species_url(species.common_name) }}">
+              <span>{{ species.common_name }}</span>
+              <small>{{ species.sighting_count }} sighting{% if species.sighting_count != 1 %}s{% endif %}</small>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty-state">No bird species have been identified yet.</p>
+    {% endif %}
+
+    {% if notebook.unidentified %}
+      <ul class="recent-entries">
+        {% for entry in notebook.unidentified %}
+          <li><time datetime="{{ entry.date.isoformat() }}">{{ entry.date | human_date }}</time><a href="{{ entry_url(entry.id) }}">{{ entry.title }}</a></li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </section>
 
   <section aria-labelledby="finds-heading">
     <h2 id="finds-heading">Finds</h2>
@@ -23,7 +49,7 @@
         {% endfor %}
       </div>
     {% else %}
-      <p class="empty-state">No curiosities recorded yet.</p>
+      <p class="empty-state">No other curiosities recorded yet.</p>
     {% endif %}
   </section>
 

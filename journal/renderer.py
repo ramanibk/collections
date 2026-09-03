@@ -18,12 +18,10 @@ from .urls import (
     craft_url,
     entry_url,
     home_url,
-    index_url,
-    journal_url,
     media_url,
     observe_url,
+    posts_url,
     static_url,
-    year_url,
 )
 from .utils import slugify
 
@@ -65,9 +63,7 @@ class Renderer:
             bird_species_url=lambda species: bird_species_url(species, base),
             cat_url=lambda name: cat_url(name, base),
             craft_url=lambda craft: craft_url(craft, base),
-            year_url=lambda year: year_url(year, base),
-            journal_url=lambda: journal_url(base),
-            index_url=lambda: index_url(base),
+            posts_url=lambda: posts_url(base),
             about_url=lambda: about_url(base),
             static_url=lambda path: static_url(path, base),
             media_url=lambda entry_id, filename: media_url(entry_id, filename, base),

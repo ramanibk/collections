@@ -54,7 +54,7 @@ def test_build_generates_homepage_assets_and_id_based_media(tmp_path: Path) -> N
 
     homepage = (root / "public/index.html").read_text(encoding="utf-8")
     assert result.entry_count == 1
-    assert result.page_count == 16
+    assert result.page_count == 13
     assert result.media_count == 1
     assert result.statistics.cloud_observations == 1
     assert "/field-notes/static/css/base.css" in homepage
@@ -90,9 +90,10 @@ def test_build_generates_homepage_assets_and_id_based_media(tmp_path: Path) -> N
     assert "A small cloud." in entry_page
     assert "clouds / obs-000001" not in entry_page
     assert "check the western sky" not in entry_page
-    bird_index = (root / "public/observe/birds/index.html").read_text(encoding="utf-8")
-    assert "Bird Notebook" in bird_index
-    assert "No bird species have been identified yet." in bird_index
+    curiosities = (root / "public/observe/curiosities/index.html").read_text(encoding="utf-8")
+    assert "Birds" in curiosities
+    assert "No bird species have been identified yet." in curiosities
+    assert not (root / "public/observe/birds/index.html").exists()
     cats_index = (root / "public/cats/index.html").read_text(encoding="utf-8")
     assert "Gwen" in cats_index
     assert "Billy" in cats_index
@@ -100,15 +101,15 @@ def test_build_generates_homepage_assets_and_id_based_media(tmp_path: Path) -> N
     assert (root / "public/cats/gwen/index.html").exists()
     assert (root / "public/cats/billy/index.html").exists()
     assert (root / "public/cats/jet/index.html").exists()
-    assert (root / "public/make/index.html").exists()
+    assert (root / "public/crafts/index.html").exists()
     assert (root / "public/observe/curiosities/index.html").exists()
-    journal = (root / "public/journal/index.html").read_text(encoding="utf-8")
-    assert "September 2026" in journal
-    assert "/field-notes/journal/2026/" in journal
-    assert (root / "public/journal/2026/index.html").exists()
-    alphabetical = (root / "public/index/index.html").read_text(encoding="utf-8")
-    assert "Cumulus" in alphabetical
-    assert "Gwen" in alphabetical
+    posts = (root / "public/posts/index.html").read_text(encoding="utf-8")
+    assert "All Posts" in posts
+    assert 'data-sort="date"' in posts
+    assert 'data-sort="title"' in posts
+    assert "/field-notes/static/js/posts.js" in posts
+    assert not (root / "public/journal/index.html").exists()
+    assert not (root / "public/index/index.html").exists()
 
 
 def test_entry_gallery_places_latest_numbered_photo_first(tmp_path: Path) -> None:
@@ -165,14 +166,14 @@ Seen briefly.
 
     result = build_site(root)
 
-    assert result.page_count == 19
-    index = (root / "public/observe/birds/index.html").read_text(encoding="utf-8")
+    assert result.page_count == 16
+    index = (root / "public/observe/curiosities/index.html").read_text(encoding="utf-8")
     assert "California Scrub-Jay" in index
     assert "1 sighting" in index
     assert "Small Brown Bird" in index
-    assert "/field-notes/observe/birds/california-scrub-jay/" in index
+    assert "/field-notes/observe/curiosities/birds/california-scrub-jay/" in index
     species = (
-        root / "public/observe/birds/california-scrub-jay/index.html"
+        root / "public/observe/curiosities/birds/california-scrub-jay/index.html"
     ).read_text(encoding="utf-8")
     assert "Aphelocoma californica" in species
     assert "August 30, 2026" in species
@@ -219,7 +220,7 @@ A brief visitor.
 
     result = build_site(root)
 
-    assert result.page_count == 18
+    assert result.page_count == 15
     index = (root / "public/cats/index.html").read_text(encoding="utf-8")
     assert "/field-notes/cats/gwen/" in index
     assert "1 entry · 1 photo" in index
@@ -234,7 +235,7 @@ A brief visitor.
     ).read_text(encoding="utf-8")
 
 
-def test_build_generates_making_curiosities_journal_and_index(tmp_path: Path) -> None:
+def test_build_generates_crafts_curiosities_and_sortable_posts(tmp_path: Path) -> None:
     root = prepare_project(tmp_path)
     project = root / "content/making/wildflower-hoop"
     project.mkdir(parents=True)
@@ -276,12 +277,12 @@ Found near the path.
 
     result = build_site(root)
 
-    assert result.page_count == 20
-    making = (root / "public/make/index.html").read_text(encoding="utf-8")
-    assert "Embroidery" in making
-    assert "Wildflower Hoop" in making
-    assert "/field-notes/make/embroidery/" in making
-    craft = (root / "public/make/embroidery/index.html").read_text(encoding="utf-8")
+    assert result.page_count == 16
+    crafts = (root / "public/crafts/index.html").read_text(encoding="utf-8")
+    assert "Embroidery" in crafts
+    assert "Wildflower Hoop" in crafts
+    assert "/field-notes/crafts/embroidery/" in crafts
+    craft = (root / "public/crafts/embroidery/index.html").read_text(encoding="utf-8")
     assert "/field-notes/entry/proj-000001/" in craft
     project_page = (root / "public/entry/proj-000001/index.html").read_text(encoding="utf-8")
     assert "cotton floss" in project_page
@@ -289,13 +290,14 @@ Found near the path.
     curiosities = (root / "public/observe/curiosities/index.html").read_text(encoding="utf-8")
     assert "Spiral Shell" in curiosities
     assert "/field-notes/entry/cur-000001/" in curiosities
-    journal = (root / "public/journal/index.html").read_text(encoding="utf-8")
-    assert "August 2026" in journal
-    assert "July 2025" in journal
-    assert (root / "public/journal/2025/index.html").exists()
-    alphabetical = (root / "public/index/index.html").read_text(encoding="utf-8")
-    assert "Embroidery" in alphabetical
-    assert "/field-notes/make/embroidery/" in alphabetical
+    posts = (root / "public/posts/index.html").read_text(encoding="utf-8")
+    assert "Wildflower Hoop" in posts
+    assert "Spiral Shell" in posts
+    assert posts.index("Wildflower Hoop") < posts.index("Spiral Shell")
+    assert 'data-title="wildflower hoop"' in posts
+    assert 'data-title="spiral shell"' in posts
+    assert not (root / "public/journal/index.html").exists()
+    assert not (root / "public/index/index.html").exists()
 
 
 def test_build_replaces_only_configured_generated_output(tmp_path: Path) -> None:
