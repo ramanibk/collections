@@ -1,23 +1,71 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="contents-panel">
-    <nav class="contents-list" aria-label="Contents">
-      <a href="{{ category_url('clouds') }}">
-        <span class="contents-list__title">clouds</span><small>{{ statistics.cloud_observations }} sighting{% if statistics.cloud_observations != 1 %}s{% endif %}</small>
-      </a>
-      <a href="{{ category_url('cats') }}">
-        <span class="contents-list__title">cats</span><small>{{ statistics.cat_photographs }} photograph{% if statistics.cat_photographs != 1 %}s{% endif %}</small>
-      </a>
-      <a href="{{ category_url('making') }}">
-        <span class="contents-list__title">crafts</span><small>{{ statistics.project_count }} project{% if statistics.project_count != 1 %}s{% endif %}</small>
-      </a>
-      <a href="{{ category_url('curiosities') }}">
-        <span class="contents-list__title">curiosities</span><small>{{ statistics.curiosity_count + statistics.bird_observations }} entr{% if statistics.curiosity_count + statistics.bird_observations == 1 %}y{% else %}ies{% endif %}</small>
-      </a>
-      <a href="{{ posts_url() }}"><span class="contents-list__title">all posts</span><small>date / alphabetical</small></a>
-      <a href="{{ about_url() }}"><span class="contents-list__title">about</span><small>about this archive</small></a>
-    </nav>
-  </div>
+  <header class="catalog-heading">
+    <h1>Photographs</h1>
+    <p>Select a photograph to see its notes and tags.</p>
+  </header>
+
+  <section class="photo-catalog" aria-label="Photo catalogue">
+    {% if photo_entries %}
+      {% for entry in photo_entries %}
+        {% for filename in entry.images %}
+          {% set photo_id = entry.id ~ '-' ~ loop.index %}
+          <button class="photo-card" type="button" data-photo-dialog="{{ photo_id }}" aria-label="View {{ entry.title }}">
+            <img src="{{ media_url(entry.id, filename) }}" alt="{{ entry.get('image_alt', entry.title) }}" loading="lazy">
+          </button>
+
+          <dialog class="photo-detail" id="photo-{{ photo_id }}">
+            <button class="photo-detail__close" type="button" data-close-dialog aria-label="Close photo details">close</button>
+            <div class="photo-detail__layout">
+              <figure>
+                <img src="{{ media_url(entry.id, filename) }}" alt="{{ entry.get('image_alt', entry.title) }}">
+              </figure>
+              <div class="photo-detail__notes">
+                <p class="eyebrow">{{ entry.category }}</p>
+                <h2>{{ entry.title }}</h2>
+                <p class="photo-detail__date"><time datetime="{{ entry.date.isoformat() }}">{{ entry.date | human_date }}</time>{% if entry.location %}<span>{{ entry.location }}</span>{% endif %}</p>
+                {% if entry.body_html %}<div class="photo-detail__body">{{ entry.body_html | safe }}</div>{% endif %}
+                {% if entry.tags %}
+                  <ul class="tag-list" aria-label="Tags">
+                    {% for tag in entry.tags %}<li>{{ tag }}</li>{% endfor %}
+                  </ul>
+                {% endif %}
+                <a class="photo-detail__entry-link" href="{{ entry_url(entry.id) }}">View full entry</a>
+              </div>
+            </div>
+          </dialog>
+        {% endfor %}
+      {% endfor %}
+    {% else %}
+      {% set samples = [
+        ('lenticular-clouds.jpg', 'Lenticular clouds', 'clouds', 'A quiet study in shape and distance.'),
+        ('bird.jpg', 'Bird on a branch', 'birds', 'A quick observation from outdoors.'),
+        ('embroidery.jpg', 'Embroidery detail', 'making', 'Color, thread, and a patient hand.'),
+        ('cat.jpg', 'Cat at rest', 'cats', 'An ordinary afternoon, worth keeping.'),
+        ('shell.jpg', 'Scallop shell', 'found', 'A small object with a surprising structure.'),
+        ('cloud.jpg', 'Cloud study', 'clouds', 'Light changing across a single cloud.')
+      ] %}
+      {% for filename, title, tag, note in samples %}
+        <button class="photo-card" type="button" data-photo-dialog="sample-{{ loop.index }}" aria-label="View {{ title }}">
+          <img src="{{ static_url('images/samples/' ~ filename) }}" alt="{{ title }}" loading="lazy">
+        </button>
+        <dialog class="photo-detail" id="photo-sample-{{ loop.index }}">
+          <button class="photo-detail__close" type="button" data-close-dialog aria-label="Close photo details">close</button>
+          <div class="photo-detail__layout">
+            <figure><img src="{{ static_url('images/samples/' ~ filename) }}" alt="{{ title }}"></figure>
+            <div class="photo-detail__notes">
+              <p class="eyebrow">sample photograph</p>
+              <h2>{{ title }}</h2>
+              <p>{{ note }}</p>
+              <ul class="tag-list" aria-label="Tags"><li>{{ tag }}</li><li>sample</li></ul>
+            </div>
+          </div>
+        </dialog>
+      {% endfor %}
+    {% endif %}
+  </section>
 
 {% endblock %}
+
+{% block scripts %}<script src="{{ static_url('js/gallery.js') }}"></script>{% endblock %}

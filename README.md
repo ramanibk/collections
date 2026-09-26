@@ -177,3 +177,10 @@ python journal.py build
 ```
 
 Implementation progress and verification history are recorded in `PLAN_PROGRESS.md`; the complete original specification remains in `plan.md`.
+
+## Proposed phone photo journal
+
+The proposed Google Drive ingestion workflow and authenticated phone editor are
+documented in [`docs/photo-journal-technical-plan.md`](docs/photo-journal-technical-plan.md).
+They are not implemented yet. The design extends the current file-driven site
+without adding a database, CMS, or frontend framework.

@@ -142,9 +142,9 @@ def build_site(project_root: Path, config_path: Optional[Path] = None) -> BuildR
             "home.html",
             "/",
             page_title=config.site.title,
-            page_description=config.site.subtitle,
+            page_description=f"A photo catalogue by {config.site.title}.",
             statistics=statistics,
-            recent_entries=loaded.entries[: config.site.recent_entries],
+            photo_entries=tuple(entry for entry in loaded.entries if entry.images),
             current_section="home",
         )
         renderer.render(

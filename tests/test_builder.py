@@ -58,9 +58,11 @@ def test_build_generates_homepage_assets_and_id_based_media(tmp_path: Path) -> N
     assert result.media_count == 1
     assert result.statistics.cloud_observations == 1
     assert "/field-notes/static/css/base.css" in homepage
-    assert "/field-notes/observe/clouds/" in homepage
-    assert '<nav class="contents-list" aria-label="Contents">' in homepage
-    assert "A test archive." in homepage
+    assert "/field-notes/media/obs-000001/01.jpg" in homepage
+    assert '<section class="photo-catalog" aria-label="Photo catalogue">' in homepage
+    assert 'data-photo-dialog="obs-000001-1"' in homepage
+    assert "A small cloud." in homepage
+    assert "/field-notes/static/js/gallery.js" in homepage
     assert "Personal archive" not in homepage
     assert "<h1>FIELD NOTES</h1>" not in homepage
     assert '<header class="site-header">' in homepage
