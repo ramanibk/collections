@@ -12,7 +12,7 @@ from .config import JournalConfig, load_config
 from .loader import load_content
 from .parser import ContentParseError, parse_about
 from .renderer import Renderer
-from .urls import about_url, entry_url, notes_url, photograph_index_url, photographs_url
+from .urls import entry_url, notes_url, photograph_index_url, photographs_url
 from .validation import ValidationIssue, format_report
 
 
@@ -66,6 +66,31 @@ def _copy_media(entries, destination: Path) -> int:
     return count
 
 
+def _arrange_photos(entries):
+    """Place dated photos on a shared three-portrait/one-landscape grid.
+
+    Portraits fill the first three columns. A landscape is placed on the row
+    reached by the portraits published before it, so a later landscape keeps
+    the chronological gap instead of sliding up into the first open space.
+    """
+
+    arranged = []
+    portrait_count = 0
+    last_landscape_row = 0
+    for entry in entries:
+        if entry.orientation == "portrait":
+            row = portrait_count // 3 + 1
+            column = portrait_count % 3 + 1
+            portrait_count += 1
+        else:
+            chronological_row = portrait_count // 3 + 1
+            row = max(chronological_row, last_landscape_row + 1)
+            column = 4
+            last_landscape_row = row
+        arranged.append((entry, row, column))
+    return tuple(arranged)
+
+
 def build_site(project_root: Path, config_path: Optional[Path] = None) -> BuildResult:
     root = project_root.resolve()
     config: JournalConfig = load_config(config_path or root / "config.yaml")
@@ -91,12 +116,20 @@ def build_site(project_root: Path, config_path: Optional[Path] = None) -> BuildR
     staging = Path(tempfile.mkdtemp(prefix=f".{output.name}-", dir=output.parent))
     try:
         renderer = Renderer(root / "templates", staging, config.site)
-        renderer.render("home.html", "/", page_title=config.site.title, current_section="home")
+        renderer.env.globals.update(profile_links=about.links)
+        renderer.render(
+            "about.html",
+            "/",
+            page_title=f"{about.title} — {config.site.title}",
+            about=about,
+            current_section="about",
+        )
         renderer.render(
             "photographs.html",
             photographs_url(),
             page_title=f"Photographs — {config.site.title}",
             photo_entries=photo_entries,
+            gallery_items=_arrange_photos(photo_entries),
             breadcrumbs=(("photographs", None),),
             current_section="photographs",
         )
@@ -120,10 +153,9 @@ def build_site(project_root: Path, config_path: Optional[Path] = None) -> BuildR
         )
         renderer.render(
             "about.html",
-            about_url(),
+            "/about/",
             page_title=f"{about.title} — {config.site.title}",
             about=about,
-            breadcrumbs=(("about", None),),
             current_section="about",
         )
         for entry in loaded.entries:

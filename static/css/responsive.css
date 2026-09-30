@@ -16,17 +16,13 @@
 }
 
 @media (max-width: 32rem) {
-  :root { --gutter: 1rem; }
+  :root {
+    --gutter: .65rem;
+  }
   .archive-gallery {
-    grid-template-columns: 1fr;
-    gap: .65rem;
+    --gallery-gap: .28rem;
   }
-  .archive-gallery__portraits { gap: .5rem; }
-  .archive-gallery__divider {
-    width: 100%;
-    min-height: 1px;
-    height: 1px;
-  }
+  .archive-gallery::before { left: calc(65.2174% + .15rem); }
   .note-row {
     grid-template-columns: 1fr;
     gap: .2rem;

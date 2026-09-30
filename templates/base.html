@@ -10,13 +10,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23F4F4EF'/%3E%3Cpath d='M5 8h22M5 16h22M5 24h22' stroke='%234C6676'/%3E%3Ccircle cx='22' cy='8' r='2' fill='%23A34A47'/%3E%3C/svg%3E">
-    <link rel="stylesheet" href="{{ static_url('css/fonts.css') }}">
-    <link rel="stylesheet" href="{{ static_url('css/variables.css') }}">
-    <link rel="stylesheet" href="{{ static_url('css/base.css') }}">
-    <link rel="stylesheet" href="{{ static_url('css/layout.css') }}">
-    <link rel="stylesheet" href="{{ static_url('css/typography.css') }}">
-    <link rel="stylesheet" href="{{ static_url('css/gallery.css') }}">
-    <link rel="stylesheet" href="{{ static_url('css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ static_url('css/fonts.css') }}?v=20260930e">
+    <link rel="stylesheet" href="{{ static_url('css/variables.css') }}?v=20260930e">
+    <link rel="stylesheet" href="{{ static_url('css/base.css') }}?v=20260930e">
+    <link rel="stylesheet" href="{{ static_url('css/layout.css') }}?v=20260930e">
+    <link rel="stylesheet" href="{{ static_url('css/typography.css') }}?v=20260930e">
+    <link rel="stylesheet" href="{{ static_url('css/gallery.css') }}?v=20260930e">
+    <link rel="stylesheet" href="{{ static_url('css/responsive.css') }}?v=20260930e">
   </head>
   <body class="page-{{ current_section or 'default' }}">
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -25,10 +25,20 @@
         <a href="{{ about_url() }}"{% if current_section == 'about' %} aria-current="page"{% endif %}><b>01</b><span>About</span></a>
         <a href="{{ photographs_url() }}"{% if current_section == 'photographs' %} aria-current="page"{% endif %}><b>02</b><span>Photographs</span></a>
         <a href="{{ notes_url() }}"{% if current_section == 'notes' %} aria-current="page"{% endif %}><b>03</b><span>Notes</span></a>
+        {% for link in profile_links %}
+          <a class="site-nav__profile" href="{{ link.url }}" rel="me">
+            {% if link.label | lower == 'scholar' %}
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 1.8 8.4 12 13.8l8.1-4.3V16h1.7V8.5L12 3Zm-6 8.4v5.2c1.6 1.7 3.6 2.5 6 2.5s4.4-.8 6-2.5v-5.2L12 14.6l-6-3.2Z"/></svg>
+            {% elif link.label | lower == 'linkedin' %}
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.2 3.8a2.1 2.1 0 1 1 0 4.2 2.1 2.1 0 0 1 0-4.2ZM3.4 9.6H7v10.6H3.4V9.6Zm5.8 0h3.4v1.5h.1c.5-.9 1.7-1.9 3.5-1.9 3.7 0 4.4 2.4 4.4 5.6v5.4H17v-4.8c0-1.1 0-2.7-1.7-2.7s-1.9 1.3-1.9 2.6v4.9H9.8V9.6h-.6Z"/></svg>
+            {% endif %}
+            <span>{{ link.label }}</span>
+          </a>
+        {% endfor %}
       </nav>
       {% if breadcrumbs %}
         <nav class="breadcrumbs" aria-label="Breadcrumb">
-          <ol><li><a href="{{ home_url() }}">station</a></li>{% for label, url in breadcrumbs %}<li>{% if url %}<a href="{{ url }}">{{ label }}</a>{% else %}<span aria-current="page">{{ label }}</span>{% endif %}</li>{% endfor %}</ol>
+          <ol><li><a href="{{ home_url() }}">home</a></li>{% for label, url in breadcrumbs %}<li>{% if url %}<a href="{{ url }}">{{ label }}</a>{% else %}<span aria-current="page">{{ label }}</span>{% endif %}</li>{% endfor %}</ol>
         </nav>
       {% endif %}
     </header>

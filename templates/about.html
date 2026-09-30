@@ -2,17 +2,14 @@
 {% block content %}
   <article class="profile-page">
     <header class="profile-hero">
-      <figure class="profile-portrait">
-        <img src="{{ about.portrait_url }}" alt="{{ about.portrait_alt }}" onerror="this.hidden=true">
-      </figure>
+      <div class="profile-media">
+        <h1 class="profile-name-label">{{ about.title }}</h1>
+        <figure class="profile-portrait">
+          <img src="{{ about.portrait_url }}" alt="{{ about.portrait_alt }}" onerror="this.hidden=true">
+        </figure>
+      </div>
       <div class="profile-intro">
-        <h1>{{ about.title }}</h1>
         <div class="about-body">{{ about.body_html | safe }}</div>
-        {% if about.links %}
-          <nav class="profile-links" aria-label="Professional links">
-            {% for link in about.links %}<a href="{{ link.url }}" rel="me"><span aria-hidden="true">↗</span> {{ link.label }}</a>{% endfor %}
-          </nav>
-        {% endif %}
       </div>
     </header>
   </article>

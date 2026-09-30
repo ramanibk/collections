@@ -1,35 +1,29 @@
 .archive-gallery {
+  --gallery-gap: .65rem;
   /* Three 4:5 portraits and one 3:2 landscape resolve to roughly equal heights. */
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) 1px minmax(0, 1fr);
-  gap: .65rem;
-  align-items: stretch;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.6fr);
+  grid-auto-rows: auto;
+  gap: var(--gallery-gap);
+  align-items: start;
   width: min(100%, 56rem);
   margin-inline: auto;
 }
 
-.archive-gallery__portraits {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: .65rem;
-  align-content: start;
-}
-
-.archive-gallery__landscapes {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: .65rem;
-  align-content: start;
-}
-
-.archive-gallery__divider {
+.archive-gallery::before {
+  position: absolute;
+  inset-block: 0;
+  left: calc(65.2174% + .35rem);
   width: 1px;
-  min-height: 100%;
   background: var(--rule-color);
+  content: "";
 }
 
 .archive-card {
   display: block;
+  grid-column: var(--gallery-column);
+  grid-row: var(--gallery-row);
   width: 100%;
   padding: 0;
   border: 0;
@@ -38,6 +32,8 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.archive-card--landscape { align-self: start; }
 
 .archive-card figure {
   margin: 0;

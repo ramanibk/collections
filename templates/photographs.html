@@ -10,47 +10,27 @@
     ('cat.jpg', '2026.06.12', 'Afternoon rest', 'Landscape', 'sample-5'),
     ('cloud.jpg', '2026.04.27', 'Single cloud', 'Landscape', 'sample-6')
   ] %}
-  {% set portraits = photo_entries | selectattr('orientation', 'equalto', 'portrait') | list %}
-  {% set landscapes = photo_entries | rejectattr('orientation', 'equalto', 'portrait') | list %}
-
   <section class="archive-gallery" aria-label="Photographs">
-    <div class="archive-gallery__portraits" aria-label="Portrait photographs">
-      {% if portraits %}
-        {% for entry in portraits %}
-          <a class="archive-card" href="{{ entry_url(entry.id) }}" aria-label="{{ entry.title }}">
-            <figure>
-              <img src="{{ media_url(entry.id, entry.cover) }}" alt="{{ entry.get('image_alt', entry.title) }}" loading="lazy">
-            </figure>
-          </a>
-        {% endfor %}
-      {% elif not photo_entries %}
-        {% for filename, date, title, format, photo_id in portrait_samples %}
-          <button class="archive-card" type="button" data-photo-dialog="{{ photo_id }}" aria-label="{{ title }}">
-            <figure><img src="{{ static_url('images/samples/' ~ filename) }}" alt="{{ title }}" loading="lazy"></figure>
-          </button>
-        {% endfor %}
-      {% endif %}
-    </div>
-
-    <span class="archive-gallery__divider" aria-hidden="true"></span>
-
-    <div class="archive-gallery__landscapes" aria-label="Landscape photographs">
-      {% if landscapes %}
-        {% for entry in landscapes %}
-          <a class="archive-card" href="{{ entry_url(entry.id) }}" aria-label="{{ entry.title }}">
-            <figure>
-              <img src="{{ media_url(entry.id, entry.cover) }}" alt="{{ entry.get('image_alt', entry.title) }}" loading="lazy">
-            </figure>
-          </a>
-        {% endfor %}
-      {% elif not photo_entries %}
-        {% for filename, date, title, format, photo_id in landscape_samples %}
-          <button class="archive-card" type="button" data-photo-dialog="{{ photo_id }}" aria-label="{{ title }}">
-            <figure><img src="{{ static_url('images/samples/' ~ filename) }}" alt="{{ title }}" loading="lazy"></figure>
-          </button>
-        {% endfor %}
-      {% endif %}
-    </div>
+    {% if photo_entries %}
+      {% for entry, row, column in gallery_items %}
+        <a class="archive-card archive-card--{{ entry.orientation }}" href="{{ entry_url(entry.id) }}" aria-label="{{ entry.title }}" style="--gallery-row: {{ row }}; --gallery-column: {{ column }}">
+          <figure>
+            <img src="{{ media_url(entry.id, entry.cover) }}" alt="{{ entry.get('image_alt', entry.title) }}" loading="lazy">
+          </figure>
+        </a>
+      {% endfor %}
+    {% else %}
+      {% for filename, date, title, format, photo_id in portrait_samples %}
+        <button class="archive-card archive-card--portrait" type="button" data-photo-dialog="{{ photo_id }}" aria-label="{{ title }}" style="--gallery-row: 1; --gallery-column: {{ loop.index }}">
+          <figure><img src="{{ static_url('images/samples/' ~ filename) }}" alt="{{ title }}" loading="lazy"></figure>
+        </button>
+      {% endfor %}
+      {% for filename, date, title, format, photo_id in landscape_samples %}
+        <button class="archive-card archive-card--landscape" type="button" data-photo-dialog="{{ photo_id }}" aria-label="{{ title }}" style="--gallery-row: {{ loop.index * 2 - 1 }}; --gallery-column: 4">
+          <figure><img src="{{ static_url('images/samples/' ~ filename) }}" alt="{{ title }}" loading="lazy"></figure>
+        </button>
+      {% endfor %}
+    {% endif %}
   </section>
 
   {% for filename, date, title, format, photo_id in portrait_samples + landscape_samples %}

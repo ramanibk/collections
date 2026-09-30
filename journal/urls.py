@@ -35,7 +35,7 @@ def notes_url(base_url: str = "") -> str:
 
 
 def about_url(base_url: str = "") -> str:
-    return with_base_url("/about/", base_url)
+    return home_url(base_url)
 
 
 def static_url(path: str, base_url: str = "") -> str:

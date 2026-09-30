@@ -34,6 +34,17 @@ main,
 .site-nav a[aria-current="page"] { color: var(--blue); }
 .site-nav a[aria-current="page"] b { color: var(--red); }
 
+.site-nav__profile {
+  color: var(--blue);
+}
+
+.site-nav__profile svg {
+  width: 1rem;
+  height: 1rem;
+  align-self: center;
+  fill: currentcolor;
+}
+
 .breadcrumbs {
   padding: .6rem 0;
   border-bottom: var(--rule);
@@ -110,9 +121,27 @@ main {
 
 .profile-hero {
   display: grid;
-  grid-template-columns: 17rem minmax(0, 1fr);
+  grid-template-columns: 20rem minmax(0, 1fr);
   gap: clamp(2rem, 5vw, 4rem);
   align-items: center;
+}
+
+.profile-media {
+  position: relative;
+  width: 100%;
+  max-width: 20rem;
+  padding-left: 3rem;
+}
+
+.profile-name-label {
+  position: absolute;
+  top: 50%;
+  left: 1.5rem;
+  width: max-content;
+  margin: 0;
+  transform: translate(-50%, -50%) rotate(-90deg);
+  transform-origin: center;
+  white-space: nowrap;
 }
 
 .profile-portrait {

@@ -75,6 +75,8 @@ The note body is ordinary Markdown.
 
 Required fields are `id`, `title`, `date`, and `type`. Valid types are `photo`, `note`, and `essay`. Photo orientation is `portrait` or `landscape`. Tags are trimmed and deduplicated case-insensitively during parsing.
 
+The photograph archive uses one chronological grid: portraits fill three columns and landscapes use the wider fourth column. Landscape rows are derived from the entry date, so posting a landscape after later portrait groups naturally leaves visible gaps in the landscape column.
+
 ## Structure
 
 ```text
@@ -86,7 +88,7 @@ tests/            focused content, build, CLI, and deployment tests
 public/           generated output; never edit directly
 ```
 
-The public navigation contains only About, Photographs, and Notes. The cross-content tag filter is a supporting archive utility linked from the footer and generated at `/photographs/filter/`.
+The About page is the homepage. The public navigation also links to Photographs, Notes, and the professional profiles configured in `content/about.md`. The cross-content tag filter is a supporting archive utility linked from the footer and generated at `/photographs/filter/`.
 
 ## Configuration and deployment
 

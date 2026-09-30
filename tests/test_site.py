@@ -3,8 +3,9 @@ from __future__ import annotations
 import shutil
 from html.parser import HTMLParser
 from pathlib import Path
+from types import SimpleNamespace
 
-from journal.builder import build_site
+from journal.builder import _arrange_photos, build_site
 
 REPOSITORY = Path(__file__).resolve().parents[1]
 
@@ -105,10 +106,10 @@ def test_build_only_generates_current_site_sections(tmp_path: Path) -> None:
 
     homepage = (root / "public/index.html").read_text(encoding="utf-8")
     assert ">About<" in homepage
-    assert "About / Profile" not in homepage
-    assert "Photograph Archive" in homepage
+    assert "dependable research infrastructure" in homepage
     assert "Notes" in homepage
     assert "Archive Filter" not in homepage
+    assert 'aria-label="Breadcrumb"' not in homepage
 
     photographs = (root / "public/photographs/index.html").read_text(encoding="utf-8")
     assert "/archive/media/photo-000001/image.jpg" in photographs
@@ -137,3 +138,16 @@ def test_every_generated_internal_link_resolves(tmp_path: Path) -> None:
             if target.endswith("/"):
                 destination /= "index.html"
             assert destination.exists(), f"{page}: broken internal target {target}"
+
+
+def test_landscapes_keep_chronological_gaps_in_fourth_column() -> None:
+    entries = [
+        SimpleNamespace(orientation="landscape"),
+        *(SimpleNamespace(orientation="portrait") for _ in range(6)),
+        SimpleNamespace(orientation="landscape"),
+    ]
+
+    arranged = _arrange_photos(entries)
+
+    assert arranged[0][1:] == (1, 4)
+    assert arranged[-1][1:] == (3, 4)
