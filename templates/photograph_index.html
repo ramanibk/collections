@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+  <form class="tag-filter" data-index-filters>
+    <details class="tag-picker" data-tag-picker>
+      <summary><span data-tag-summary>Select tags</span><span aria-hidden="true">⌄</span></summary>
+      <fieldset>
+        <legend>Filter by one or more tags</legend>
+        {% if index_tags %}
+          {% for tag in index_tags %}
+            <label>
+              <input type="checkbox" name="tags" value="{{ tag }}">
+              <span>{{ tag | upper }}</span>
+            </label>
+          {% endfor %}
+        {% else %}
+          <p class="tag-picker__empty">No tags available</p>
+        {% endif %}
+      </fieldset>
+    </details>
+    <button type="reset">Clear</button>
+  </form>
+
+  <p class="filter-status" aria-live="polite" data-filter-status>
+    Select one or more tags to view the archive.
+  </p>
+  <div class="table-scroll">
+    <table class="filter-index">
+      <thead><tr><th>Date</th><th>Title</th><th>Tags</th><th aria-label="Preview"></th></tr></thead>
+      <tbody data-index-rows>
+        {% for entry in index_entries %}
+          {% set kind = 'photograph' if entry.type == 'photo' else entry.type %}
+          <tr hidden data-tags='{{ filter_tags_by_entry[entry.id] | tojson }}'>
+            <td><time datetime="{{ entry.date.isoformat() }}">{{ entry.date.isoformat() }}</time></td>
+            <td><a href="{{ entry_url(entry.id) }}">{{ entry.title }}</a></td>
+            <td>
+              <span>{{ kind | upper }}</span>
+              {% for tag in entry.tags %}<span>{{ tag | upper }}</span>{% endfor %}
+            </td>
+            <td>
+              {% if entry.cover %}
+                <a class="index-preview" href="{{ entry_url(entry.id) }}" aria-label="View {{ entry.title }}">
+                  <img src="{{ media_url(entry.id, entry.cover) }}" alt="" loading="lazy">
+                </a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+{% block scripts %}<script src="{{ static_url('js/photo-index.js') }}" defer></script>{% endblock %}

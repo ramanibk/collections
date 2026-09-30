@@ -1,4 +1,4 @@
-"""Configuration loading for the journal project."""
+"""Configuration loading for the archive."""
 
 from __future__ import annotations
 
@@ -10,15 +10,14 @@ import yaml
 
 
 class ConfigError(ValueError):
-    """Raised when ``config.yaml`` cannot be interpreted."""
+    pass
 
 
 @dataclass(frozen=True)
 class SiteConfig:
     title: str = "Ramani"
-    subtitle: str = "Field notes, photographs, and things made."
+    subtitle: str = "Photographs and notes."
     base_url: str = ""
-    recent_entries: int = 5
 
 
 @dataclass(frozen=True)
@@ -27,15 +26,9 @@ class BuildConfig:
 
 
 @dataclass(frozen=True)
-class CloudConfig:
-    show_unobserved_genera: bool = False
-
-
-@dataclass(frozen=True)
 class JournalConfig:
     site: SiteConfig = field(default_factory=SiteConfig)
     build: BuildConfig = field(default_factory=BuildConfig)
-    clouds: CloudConfig = field(default_factory=CloudConfig)
 
 
 def _mapping(value: Any, section: str) -> Mapping[str, Any]:
@@ -54,8 +47,6 @@ def _base_url(value: Any) -> str:
 
 
 def load_config(path: Path) -> JournalConfig:
-    """Load a project config, resolving build paths from the config location."""
-
     try:
         raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     except OSError as exc:
@@ -67,11 +58,6 @@ def load_config(path: Path) -> JournalConfig:
 
     site = _mapping(raw.get("site"), "site")
     build = _mapping(raw.get("build"), "build")
-    clouds = _mapping(raw.get("clouds"), "clouds")
-    recent_entries = site.get("recent_entries", 5)
-    if not isinstance(recent_entries, int) or isinstance(recent_entries, bool) or recent_entries < 0:
-        raise ConfigError("site.recent_entries must be a non-negative integer")
-
     output_value = build.get("output_dir", "public")
     if not isinstance(output_value, str) or not output_value.strip():
         raise ConfigError("build.output_dir must be a non-empty path")
@@ -82,10 +68,8 @@ def load_config(path: Path) -> JournalConfig:
     return JournalConfig(
         site=SiteConfig(
             title=str(site.get("title", "Ramani")),
-            subtitle=str(site.get("subtitle", "Field notes, photographs, and things made.")),
+            subtitle=str(site.get("subtitle", "Photographs and notes.")),
             base_url=_base_url(site.get("base_url", "")),
-            recent_entries=recent_entries,
         ),
         build=BuildConfig(output_dir=output_dir),
-        clouds=CloudConfig(show_unobserved_genera=bool(clouds.get("show_unobserved_genera", False))),
     )

@@ -1,4 +1,4 @@
-"""Reusable, noninteractive content-entry creation functions."""
+"""Create photo, note, and essay entries."""
 
 from __future__ import annotations
 
@@ -6,18 +6,18 @@ import shutil
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Iterable, Sequence
 
 import yaml
 
 from .ids import ID_PREFIXES, next_permanent_id, record_permanent_id
-from .parser import ContentParseError, SUPPORTED_IMAGE_SUFFIXES, parse_entry
-from .utils import slugify
+from .parser import SUPPORTED_IMAGE_SUFFIXES, ContentParseError, parse_entry
+from .utils import normalize_tags, slugify
 from .validation import validate_entries
 
 
 class CreationError(ValueError):
-    """Raised when a new entry cannot be safely created."""
+    pass
 
 
 @dataclass(frozen=True)
@@ -26,15 +26,6 @@ class CreatedEntry:
     directory: Path
     source_path: Path
     image_names: tuple[str, ...]
-
-
-KIND_DETAILS = {
-    "cloud": ("clouds", "observation"),
-    "bird": ("birds", "observation"),
-    "cat": ("cats", "cat"),
-    "project": ("making", "project"),
-    "curiosity": ("curiosities", "curiosity"),
-}
 
 
 def _entry_date(value: date | str | None) -> date:
@@ -57,37 +48,26 @@ def _list(values: Iterable[str] | str | None) -> list[str]:
 
 
 def _image_paths(values: Sequence[str | Path]) -> tuple[Path, ...]:
-    paths: list[Path] = []
+    paths = []
     for value in values:
         path = Path(value).expanduser().resolve()
         if not path.is_file():
             raise CreationError(f"image does not exist or is not a file: {value}")
         if path.suffix.lower() not in SUPPORTED_IMAGE_SUFFIXES:
-            allowed = ", ".join(sorted(SUPPORTED_IMAGE_SUFFIXES))
-            raise CreationError(f"unsupported image type for {value}; expected {allowed}")
+            raise CreationError(f"unsupported image type: {value}")
         paths.append(path)
     return tuple(paths)
 
 
-def _unique_directory(parent: Path, name: str) -> Path:
-    candidate = parent / name
-    number = 2
-    while candidate.exists():
-        candidate = parent / f"{name}-{number}"
-        number += 1
-    return candidate
-
-
 def _copy_images(sources: Sequence[Path], destination: Path) -> tuple[str, ...]:
-    copied: list[str] = []
-    used: set[str] = set()
+    copied = []
+    used = set()
     for source in sources:
         stem = slugify(source.stem)
-        suffix = source.suffix.lower()
-        filename = f"{stem}{suffix}"
+        filename = f"{stem}{source.suffix.lower()}"
         number = 2
         while filename.casefold() in used:
-            filename = f"{stem}-{number}{suffix}"
+            filename = f"{stem}-{number}{source.suffix.lower()}"
             number += 1
         shutil.copy2(source, destination / filename)
         copied.append(filename)
@@ -97,34 +77,36 @@ def _copy_images(sources: Sequence[Path], destination: Path) -> tuple[str, ...]:
 
 def create_entry(
     project_root: Path,
-    kind: str,
+    entry_type: str,
     *,
     title: str,
     entry_date: date | str | None = None,
     image_paths: Sequence[str | Path] = (),
     location: str | None = None,
+    orientation: str = "landscape",
     tags: Iterable[str] | str | None = None,
     notes: str = "",
-    favorite: bool = False,
-    metadata: Mapping[str, Any] | None = None,
 ) -> CreatedEntry:
-    """Create one complete entry directory after validating all inputs."""
-
-    normalized_kind = kind.strip().lower()
-    if normalized_kind not in KIND_DETAILS:
-        raise CreationError(f"unsupported entry kind {kind!r}")
+    normalized_type = entry_type.strip().casefold()
+    if normalized_type not in ID_PREFIXES:
+        raise CreationError(f"unsupported entry type {entry_type!r}")
     clean_title = title.strip()
     if not clean_title:
         raise CreationError("title cannot be blank")
-    chosen_date = _entry_date(entry_date)
     sources = _image_paths(image_paths)
-    root = project_root.resolve()
-    content_dir = root / "content"
-    category, entry_type = KIND_DETAILS[normalized_kind]
-    entry_id = next_permanent_id(content_dir, ID_PREFIXES[normalized_kind])
-    parent = content_dir / category
+    if normalized_type == "photo" and not sources:
+        raise CreationError("photo entries require an image")
+
+    chosen_date = _entry_date(entry_date)
+    content_dir = project_root.resolve() / "content"
+    entry_id = next_permanent_id(content_dir, ID_PREFIXES[normalized_type])
+    parent = content_dir / ("photographs" if normalized_type == "photo" else "notes")
     parent.mkdir(parents=True, exist_ok=True)
-    directory = _unique_directory(parent, f"{chosen_date.isoformat()}-{slugify(clean_title)}")
+    directory = parent / f"{chosen_date.isoformat()}-{slugify(clean_title)}"
+    number = 2
+    while directory.exists():
+        directory = parent / f"{chosen_date.isoformat()}-{slugify(clean_title)}-{number}"
+        number += 1
     directory.mkdir()
 
     try:
@@ -133,90 +115,37 @@ def create_entry(
             "id": entry_id,
             "title": clean_title,
             "date": chosen_date.isoformat(),
-            "type": entry_type,
-            "category": category,
+            "type": normalized_type,
         }
         if location and location.strip():
             frontmatter["location"] = location.strip()
         if image_names:
             frontmatter["cover"] = image_names[0]
-        if favorite:
-            frontmatter["favorite"] = True
-        clean_tags = _list(tags)
+        if normalized_type == "photo":
+            frontmatter["orientation"] = orientation.strip().casefold()
+        clean_tags = normalize_tags(_list(tags))
         if clean_tags:
             frontmatter["tags"] = clean_tags
-        for key, value in (metadata or {}).items():
-            if value not in (None, "", [], ()):
-                frontmatter[key] = list(value) if isinstance(value, tuple) else value
-
-        yaml_text = yaml.safe_dump(
-            frontmatter,
-            sort_keys=False,
-            allow_unicode=True,
-            default_flow_style=False,
-        ).rstrip()
-        body = notes.strip()
+        yaml_text = yaml.safe_dump(frontmatter, sort_keys=False, allow_unicode=True).rstrip()
         source_path = directory / "entry.md"
-        source_path.write_text(f"---\n{yaml_text}\n---\n\n{body}\n", encoding="utf-8")
+        source_path.write_text(f"---\n{yaml_text}\n---\n\n{notes.strip()}\n", encoding="utf-8")
         try:
             parsed = parse_entry(source_path)
         except ContentParseError as exc:
             raise CreationError(str(exc)) from exc
         report = validate_entries((parsed,))
         if report.errors:
-            messages = "; ".join(issue.message for issue in report.errors)
-            raise CreationError(messages)
+            raise CreationError("; ".join(issue.message for issue in report.errors))
         record_permanent_id(content_dir, entry_id)
     except Exception:
         shutil.rmtree(directory, ignore_errors=True)
         raise
-
     return CreatedEntry(entry_id, directory, source_path, image_names)
 
 
-def create_cloud_entry(project_root: Path, **values: Any) -> CreatedEntry:
-    metadata = {
-        "cloud_genus": values.pop("cloud_genus", None),
-        "cloud_species": values.pop("cloud_species", None),
-        "cloud_variety": values.pop("cloud_variety", None),
-        "identification": values.pop("identification", None),
-        "confidence": values.pop("confidence", None),
-    }
-    return create_entry(project_root, "cloud", metadata=metadata, **values)
+def create_photo_entry(project_root: Path, **values: Any) -> CreatedEntry:
+    return create_entry(project_root, "photo", **values)
 
 
-def create_bird_entry(project_root: Path, **values: Any) -> CreatedEntry:
-    metadata = {
-        "common_name": values.pop("common_name", None),
-        "scientific_name": values.pop("scientific_name", None),
-        "identification": values.pop("identification", None),
-        "confidence": values.pop("confidence", None),
-        "count": values.pop("count", None),
-    }
-    return create_entry(project_root, "bird", metadata=metadata, **values)
-
-
-def create_cat_entry(project_root: Path, **values: Any) -> CreatedEntry:
-    metadata = {
-        "cat_name": values.pop("cat_name", None),
-        "relationship": values.pop("relationship", None),
-    }
-    return create_entry(project_root, "cat", metadata=metadata, **values)
-
-
-def create_project_entry(project_root: Path, **values: Any) -> CreatedEntry:
-    started = values.pop("started", None)
-    completed = values.pop("completed", None)
-    values.setdefault("entry_date", completed or started or None)
-    metadata = {
-        "craft": values.pop("craft", None),
-        "status": values.pop("status", None),
-        "started": started,
-        "completed": completed,
-        "materials": _list(values.pop("materials", None)),
-    }
-    return create_entry(project_root, "project", metadata=metadata, **values)
-
-
-def create_curiosity_entry(project_root: Path, **values: Any) -> CreatedEntry:
-    return create_entry(project_root, "curiosity", **values)
+def create_note_entry(project_root: Path, *, essay: bool = False, **values: Any) -> CreatedEntry:
+    return create_entry(project_root, "essay" if essay else "note", **values)

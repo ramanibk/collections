@@ -1,33 +1,22 @@
 {% extends "base.html" %}
-
 {% block content %}
-  <header class="introduction posts-heading">
-    <div>
-      <h1>All Posts</h1>
-      <p class="subtitle">Every entry in one place.</p>
-    </div>
+  <section class="notes-list" aria-label="Notes archive">
     {% if posts %}
-      <div class="sort-controls" role="group" aria-label="Sort posts">
-        <span>sort by</span>
-        <button type="button" data-sort="date" aria-pressed="true">date</button>
-        <button type="button" data-sort="title" aria-pressed="false">alphabetical</button>
+      <div class="note-row note-row--heading" aria-hidden="true">
+        <span>Date</span><span>Title</span><span>Tags</span>
       </div>
-    {% endif %}
-  </header>
-
-  {% if posts %}
-    <ol class="posts-list" id="all-posts-list">
       {% for entry in posts %}
-        <li data-title="{{ entry.title | lower }}" data-date="{{ entry.date.isoformat() }}" data-id="{{ entry.id }}">
-          <time datetime="{{ entry.date.isoformat() }}">{{ entry.date | human_date }}</time>
-          <a href="{{ entry_url(entry.id) }}">{{ entry.title }}</a>
-          <span>{% if entry.category == 'birds' %}Curiosities{% elif entry.category == 'making' %}Crafts{% else %}{{ entry.category | title }}{% endif %}</span>
-        </li>
+        <article class="note-row" data-title="{{ entry.title | lower }}" data-date="{{ entry.date.isoformat() }}">
+          <time datetime="{{ entry.date.isoformat() }}">{{ entry.date.isoformat() }}</time>
+          <h2><a href="{{ entry_url(entry.id) }}">{{ entry.title }}</a></h2>
+          <p class="note-tags">
+            <span>{{ entry.type | upper }}</span>
+            {% for tag in entry.tags %}<span>{{ tag | upper }}</span>{% endfor %}
+          </p>
+        </article>
       {% endfor %}
-    </ol>
-  {% else %}
-    <p class="empty-state">The archive is ready for its first post.</p>
-  {% endif %}
+    {% else %}
+      <p class="empty-state">No notes yet.</p>
+    {% endif %}
+  </section>
 {% endblock %}
-
-{% block scripts %}<script src="{{ static_url('js/posts.js') }}" defer></script>{% endblock %}

@@ -1,4 +1,4 @@
-"""Content validation with structured errors and warnings."""
+"""Validation for the compact photo-and-note content model."""
 
 from __future__ import annotations
 
@@ -7,9 +7,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Iterable, List, Sequence, Tuple
 
-from .models import BirdMetadata, CatMetadata, CloudMetadata, ContentEntry, ProjectMetadata
-from .cats import MY_CATS
-from .taxonomy import CATEGORIES
+from .models import ContentEntry
 
 
 class Severity(str, Enum):
@@ -26,8 +24,9 @@ class ValidationIssue:
 
     def __str__(self) -> str:
         location = ", ".join(str(path) for path in self.paths)
-        suffix = f" [{location}]" if location else ""
-        return f"{self.severity.value.upper()}: {self.message}{suffix}"
+        return f"{self.severity.value.upper()}: {self.message}" + (
+            f" [{location}]" if location else ""
+        )
 
 
 @dataclass
@@ -57,158 +56,49 @@ class ValidationReport:
 
 
 COMMON_FIELDS = frozenset(
-    {
-        "id",
-        "title",
-        "date",
-        "type",
-        "category",
-        "slug",
-        "location",
-        "cover",
-        "favorite",
-        "tags",
-        "status",
-        "image_alt",
-        "margin_note",
-        "sample",
-    }
+    {"id", "title", "date", "type", "slug", "location", "cover", "tags", "image_alt", "orientation"}
 )
-
-CATEGORY_FIELDS = {
-    "clouds": frozenset(
-        {
-            "cloud_genus",
-            "cloud_species",
-            "cloud_variety",
-            "supplementary_features",
-            "optical_phenomena",
-            "identification",
-            "confidence",
-        }
-    ),
-    "birds": frozenset(
-        {"common_name", "scientific_name", "identification", "confidence", "count"}
-    ),
-    "cats": frozenset({"cat_name", "relationship"}),
-    "making": frozenset({"craft", "started", "completed", "materials"}),
-    # Curiosities intentionally accept arbitrary metadata.
-    "curiosities": frozenset(),
-}
-
-PROJECT_STATUSES = frozenset(
-    {"idea", "planned", "in-progress", "paused", "completed", "abandoned"}
-)
+ENTRY_TYPES = frozenset({"photo", "note", "essay"})
 
 
 def _validate_entry(entry: ContentEntry, report: ValidationReport) -> None:
     source = entry.source_path
-    if entry.category not in CATEGORIES:
+    if entry.type not in ENTRY_TYPES:
+        report.add_error("unsupported_type", "type must be 'photo', 'note', or 'essay'", source)
+    if entry.type == "photo" and not entry.images:
+        report.add_error("missing_photo", "photo entries require at least one image", source)
+    if entry.orientation not in {"portrait", "landscape"}:
         report.add_error(
-            "unsupported_category",
-            f"unsupported category {entry.category!r}; expected one of {', '.join(CATEGORIES)}",
-            source,
+            "invalid_orientation", "orientation must be 'portrait' or 'landscape'", source
         )
-        return
-
     declared_cover = entry.raw_frontmatter.get("cover")
     if declared_cover not in (None, "") and str(declared_cover) not in entry.images:
         report.add_error(
-            "missing_media",
-            f"referenced cover image {str(declared_cover)!r} does not exist",
-            source,
+            "missing_media", f"referenced cover image {declared_cover!r} does not exist", source
         )
-
-    confidence = None
-    if isinstance(entry.metadata, (CloudMetadata, BirdMetadata)):
-        confidence = entry.metadata.confidence
-    if confidence is not None and not 1 <= confidence <= 5:
-        report.add_error(
-            "invalid_confidence",
-            f"confidence must be between 1 and 5, got {confidence}",
-            source,
+    for key in sorted(set(entry.raw_frontmatter) - COMMON_FIELDS):
+        report.add_warning(
+            "unknown_metadata", f"unknown metadata field {key!r} was preserved", source
         )
-
-    if entry.category == "cats" and isinstance(entry.metadata, CatMetadata):
-        cat_name = (entry.metadata.cat_name or "").strip()
-        relationship = (entry.metadata.relationship or "").strip().casefold()
-        allowed_names = {name.casefold() for name in MY_CATS}
-        if cat_name and cat_name.casefold() not in allowed_names:
-            report.add_error(
-                "unsupported_cat_name",
-                f"cat_name must be one of {', '.join(MY_CATS)}; got {cat_name!r}",
-                source,
-            )
-        if relationship and relationship not in {"mine", "encounter"}:
-            report.add_error(
-                "invalid_cat_relationship",
-                "relationship must be 'mine' or 'encounter'",
-                source,
-            )
-        if relationship == "mine" and not cat_name:
-            report.add_error(
-                "missing_cat_name",
-                "a cat entry with relationship 'mine' requires cat_name",
-                source,
-            )
-
-    if entry.category == "making" and isinstance(entry.metadata, ProjectMetadata):
-        status = (entry.metadata.status or "").strip().casefold()
-        if status and status not in PROJECT_STATUSES:
-            report.add_error(
-                "invalid_project_status",
-                f"unsupported project status {entry.metadata.status!r}",
-                source,
-            )
-        if (
-            entry.metadata.started
-            and entry.metadata.completed
-            and entry.metadata.completed < entry.metadata.started
-        ):
-            report.add_error(
-                "invalid_project_dates",
-                "completed date cannot be before started date",
-                source,
-            )
-
-    if entry.category != "curiosities":
-        known = COMMON_FIELDS | CATEGORY_FIELDS[entry.category]
-        for key in sorted(set(entry.raw_frontmatter) - known):
-            report.add_warning(
-                "unknown_metadata",
-                f"unknown metadata field {key!r} was preserved",
-                source,
-            )
 
 
 def validate_entries(entries: Sequence[ContentEntry]) -> ValidationReport:
-    """Validate normalized entries, including collection-wide invariants."""
-
     report = ValidationReport()
     entries_by_id = {}
     for entry in entries:
         entries_by_id.setdefault(entry.id, []).append(entry)
         _validate_entry(entry, report)
-
     for entry_id, duplicates in sorted(entries_by_id.items()):
         if len(duplicates) > 1:
             paths = tuple(sorted((entry.source_path for entry in duplicates), key=str))
-            report.add_error(
-                "duplicate_id",
-                f"duplicate permanent ID {entry_id!r}",
-                *paths,
-            )
+            report.add_error("duplicate_id", f"duplicate permanent ID {entry_id!r}", *paths)
     return report
 
 
 def format_report(report: ValidationReport) -> str:
-    """Create concise, deterministic text suitable for a CLI or build log."""
-
     lines = []
     for issue in report.issues:
         lines.append(f"{issue.severity.value.upper()} {issue.code}: {issue.message}")
         lines.extend(f"  - {path}" for path in issue.paths)
-    lines.append(
-        f"Validation: {len(report.errors)} error(s), {len(report.warnings)} warning(s)"
-    )
+    lines.append(f"Validation: {len(report.errors)} error(s), {len(report.warnings)} warning(s)")
     return "\n".join(lines)

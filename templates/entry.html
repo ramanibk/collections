@@ -1,33 +1,37 @@
 {% extends "base.html" %}
-
 {% block content %}
-  <article class="entry">
-    <header class="introduction">
-      <p class="eyebrow"><a href="{{ category_url(entry.category) }}">{% if entry.category == 'birds' %}Curiosities{% elif entry.category == 'making' %}Crafts{% else %}{{ entry.category | title }}{% endif %}</a></p>
-      <h1>{{ entry.title }}</h1>
-      <p class="entry-date"><time datetime="{{ entry.date.isoformat() }}">{{ entry.date | human_date }}</time></p>
-      {% if entry.location %}<p>{{ entry.location }}</p>{% endif %}
-    </header>
-
-    {% if entry.images %}
-      <section aria-labelledby="gallery-heading">
-        <h2 id="gallery-heading">Photographs</h2>
-        <div class="entry-gallery">
-          {% for filename in entry.images[:6] | reverse %}
-            <figure>
-              <img src="{{ media_url(entry.id, filename) }}" alt="{{ entry.get('image_alt', entry.title) }}" loading="lazy">
-            </figure>
+  {% if entry.type == 'photo' %}
+    <article class="photo-entry">
+      <div class="photo-record photo-record--page">
+        <figure><img src="{{ media_url(entry.id, entry.cover) }}" alt="{{ entry.get('image_alt', entry.title) }}"></figure>
+        <aside>
+          <p class="section-number">PHOTOGRAPH · {{ entry.id }}</p>
+          <h1>{{ entry.title }}</h1>
+          <dl class="compact-record">
+            <div><dt>Date</dt><dd>{{ entry.date.isoformat() }}</dd></div>
+            <div><dt>Location</dt><dd>{{ entry.location or 'Not recorded' }}</dd></div>
+            <div><dt>Format</dt><dd>{{ entry.orientation | title }}</dd></div>
+            <div><dt>Tags</dt><dd>{{ entry.tags | join(' · ') or 'Unclassified' }}</dd></div>
+            <div><dt>Notes</dt><dd>{{ entry.body_html | safe if entry.body_html else 'No additional notes.' }}</dd></div>
+          </dl>
+        </aside>
+      </div>
+      {% if entry.images | length > 1 %}
+        <section class="entry-gallery" aria-label="Related photographs">
+          {% for filename in entry.images[1:] %}
+            <figure><img src="{{ media_url(entry.id, filename) }}" alt="{{ entry.get('image_alt', entry.title) }}" loading="lazy"></figure>
           {% endfor %}
-        </div>
-      </section>
-    {% endif %}
-
-    {% if entry.body_html %}
-      <section class="entry-body" aria-label="Entry notes">{{ entry.body_html | safe }}</section>
-    {% endif %}
-
-    {% if entry.tags %}
-      <footer class="entry-tags"><span>Filed under:</span> {{ entry.tags | join(', ') }}</footer>
-    {% endif %}
-  </article>
+        </section>
+      {% endif %}
+    </article>
+  {% else %}
+    <article class="field-note">
+      <header>
+        <p class="section-number">{{ entry.type | upper }} · {{ entry.date.isoformat() }}</p>
+        <h1>{{ entry.title }}</h1>
+        {% if entry.tags %}<p class="entry-tagline">{{ entry.tags | join(' · ') }}</p>{% endif %}
+      </header>
+      <div class="entry-body">{{ entry.body_html | safe }}</div>
+    </article>
+  {% endif %}
 {% endblock %}

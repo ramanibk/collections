@@ -1,11 +1,7 @@
 site:
   title: Ramani
-  subtitle: Field notes, photographs, and things made.
+  subtitle: Photographs and notes.
   base_url: /collections
-  recent_entries: 5
 
 build:
   output_dir: public
-
-clouds:
-  show_unobserved_genera: false

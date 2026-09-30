@@ -9,13 +9,10 @@ import yaml
 
 from .parser import split_frontmatter
 
-
 ID_PREFIXES = {
-    "cloud": "obs",
-    "bird": "obs",
-    "cat": "cat",
-    "project": "proj",
-    "curiosity": "cur",
+    "photo": "photo",
+    "note": "note",
+    "essay": "note",
 }
 SEQUENCE_FILE = ".id-sequences.yaml"
 

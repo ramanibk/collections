@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+  {% set portrait_samples = [
+    ('bird.jpg', '2026.08.18', 'Bird study', 'Portrait', 'sample-1'),
+    ('embroidery.jpg', '2026.07.03', 'Thread study', 'Portrait', 'sample-2'),
+    ('shell.jpg', '2026.05.22', 'Found form', 'Portrait', 'sample-3')
+  ] %}
+  {% set landscape_samples = [
+    ('lenticular-clouds.jpg', '2026.09.18', 'Lenticular field', 'Landscape', 'sample-4'),
+    ('cat.jpg', '2026.06.12', 'Afternoon rest', 'Landscape', 'sample-5'),
+    ('cloud.jpg', '2026.04.27', 'Single cloud', 'Landscape', 'sample-6')
+  ] %}
+  {% set portraits = photo_entries | selectattr('orientation', 'equalto', 'portrait') | list %}
+  {% set landscapes = photo_entries | rejectattr('orientation', 'equalto', 'portrait') | list %}
+
+  <section class="archive-gallery" aria-label="Photographs">
+    <div class="archive-gallery__portraits" aria-label="Portrait photographs">
+      {% if portraits %}
+        {% for entry in portraits %}
+          <a class="archive-card" href="{{ entry_url(entry.id) }}" aria-label="{{ entry.title }}">
+            <figure>
+              <img src="{{ media_url(entry.id, entry.cover) }}" alt="{{ entry.get('image_alt', entry.title) }}" loading="lazy">
+            </figure>
+          </a>
+        {% endfor %}
+      {% elif not photo_entries %}
+        {% for filename, date, title, format, photo_id in portrait_samples %}
+          <button class="archive-card" type="button" data-photo-dialog="{{ photo_id }}" aria-label="{{ title }}">
+            <figure><img src="{{ static_url('images/samples/' ~ filename) }}" alt="{{ title }}" loading="lazy"></figure>
+          </button>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <span class="archive-gallery__divider" aria-hidden="true"></span>
+
+    <div class="archive-gallery__landscapes" aria-label="Landscape photographs">
+      {% if landscapes %}
+        {% for entry in landscapes %}
+          <a class="archive-card" href="{{ entry_url(entry.id) }}" aria-label="{{ entry.title }}">
+            <figure>
+              <img src="{{ media_url(entry.id, entry.cover) }}" alt="{{ entry.get('image_alt', entry.title) }}" loading="lazy">
+            </figure>
+          </a>
+        {% endfor %}
+      {% elif not photo_entries %}
+        {% for filename, date, title, format, photo_id in landscape_samples %}
+          <button class="archive-card" type="button" data-photo-dialog="{{ photo_id }}" aria-label="{{ title }}">
+            <figure><img src="{{ static_url('images/samples/' ~ filename) }}" alt="{{ title }}" loading="lazy"></figure>
+          </button>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </section>
+
+  {% for filename, date, title, format, photo_id in portrait_samples + landscape_samples %}
+    <dialog class="photo-detail" id="photo-{{ photo_id }}">
+      <button class="photo-detail__close" type="button" data-close-dialog>Close</button>
+      <div class="photo-record">
+        <figure><img src="{{ static_url('images/samples/' ~ filename) }}" alt="{{ title }}"></figure>
+        <aside>
+          <p class="section-number">FIELD OBSERVATION · SAMPLE</p>
+          <h2>{{ title }}</h2>
+          <dl class="compact-record">
+            <div><dt>Date</dt><dd>{{ date }}</dd></div>
+            <div><dt>Location</dt><dd>Berkeley, California</dd></div>
+            <div><dt>Format</dt><dd>{{ format }}</dd></div>
+            <div><dt>Notes</dt><dd>Light, structure, and an ordinary moment retained.</dd></div>
+          </dl>
+        </aside>
+      </div>
+    </dialog>
+  {% endfor %}
+{% endblock %}
+{% block scripts %}<script src="{{ static_url('js/gallery.js') }}"></script>{% endblock %}

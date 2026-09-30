@@ -1,60 +1,35 @@
-"""Typed, normalized content models used throughout the journal."""
+"""Typed content model for photographs and notes."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
-from typing import Any, Mapping, Optional, Tuple, Union
+from typing import Any, Mapping, Optional, Tuple
 
 
 @dataclass(frozen=True)
-class CloudMetadata:
-    genus: Optional[str] = None
-    species: Optional[str] = None
-    variety: Optional[str] = None
-    supplementary_features: Tuple[str, ...] = ()
-    optical_phenomena: Tuple[str, ...] = ()
-    identification: Optional[str] = None
-    confidence: Optional[int] = None
+class AboutLink:
+    label: str
+    url: str
 
 
 @dataclass(frozen=True)
-class BirdMetadata:
-    common_name: Optional[str] = None
-    scientific_name: Optional[str] = None
-    identification: Optional[str] = None
-    confidence: Optional[int] = None
-    count: Optional[int] = None
-
-
-@dataclass(frozen=True)
-class CatMetadata:
-    cat_name: Optional[str] = None
-    relationship: Optional[str] = None
-
-
-@dataclass(frozen=True)
-class ProjectMetadata:
-    craft: Optional[str] = None
-    status: Optional[str] = None
-    started: Optional[date] = None
-    completed: Optional[date] = None
-    materials: Tuple[str, ...] = ()
-
-
-CategoryMetadata = Union[CloudMetadata, BirdMetadata, CatMetadata, ProjectMetadata, None]
+class AboutContent:
+    title: str
+    body_html: str
+    portrait_url: str
+    portrait_alt: str
+    record_label: str
+    links: Tuple[AboutLink, ...] = ()
 
 
 @dataclass(frozen=True)
 class ContentEntry:
-    """Common model for every item, with raw metadata kept for extension."""
-
     id: str
     title: str
     date: date
     type: str
-    category: str
     slug: str
     source_path: Path
     body_markdown: str
@@ -62,35 +37,19 @@ class ContentEntry:
     tags: Tuple[str, ...] = ()
     cover: Optional[str] = None
     images: Tuple[str, ...] = ()
-    favorite: bool = False
     location: Optional[str] = None
-    status: Optional[str] = None
-    metadata: CategoryMetadata = None
+    orientation: str = "landscape"
     raw_frontmatter: Mapping[str, Any] = field(default_factory=dict)
 
     @property
     def folder(self) -> Path:
         return self.source_path.parent
 
-    @property
-    def source(self) -> Path:
-        """Compatibility name used by the original build prototype."""
-
-        return self.source_path
-
-    @property
-    def meta(self) -> Mapping[str, Any]:
-        """Compatibility name for templates and catalogue code."""
-
-        return self.raw_frontmatter
-
     def get(self, key: str, default: Any = None) -> Any:
         return self.raw_frontmatter.get(key, default)
 
     @property
     def url(self) -> str:
-        """The permanent URL; specialized routes can link back to this page."""
-
         return f"/entry/{self.id}/"
 
     def image_url(self, filename: Optional[str]) -> Optional[str]:

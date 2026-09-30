@@ -1,17 +1,13 @@
-*,
-*::before,
-*::after { box-sizing: border-box; }
-
+*, *::before, *::after { box-sizing: border-box; }
 html { color-scheme: light; font-size: 100%; scroll-behavior: smooth; }
-body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); font-size: 1.05rem; line-height: 1.45; }
-img { max-width: 100%; }
-a { color: var(--color-link); text-decoration-thickness: 0.08em; text-underline-offset: 0.2em; }
-a:hover { text-decoration-thickness: 0.14em; }
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 4px; background-color: var(--color-highlight); }
-.skip-link { position: fixed; left: var(--space-sm); top: -10rem; z-index: 10; border: var(--rule); background: var(--color-bg); padding: var(--space-sm) var(--space-md); }
-.skip-link:focus { top: var(--space-sm); }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-mono); font-size: 1rem; line-height: 1.55; }
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration-color: var(--rule-color); text-underline-offset: 0.24em; }
+a:hover { text-decoration-color: var(--blue); }
+button, input, select { font: inherit; }
+button { color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+[hidden] { display: none !important; }
+.skip-link { position: fixed; top: -10rem; left: 1rem; z-index: 20; padding: .65rem .8rem; border: var(--rule); background: var(--panel); }
+.skip-link:focus { top: 1rem; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; } }
