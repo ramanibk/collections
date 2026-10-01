@@ -18,6 +18,18 @@ def test_pages_workflow_tests_validates_builds_and_deploys_public() -> None:
     assert "id-token: write" in workflow
 
 
+def test_google_form_workflow_imports_commits_and_dispatches_pages() -> None:
+    workflow = (REPOSITORY / ".github/workflows/import-google-form.yml").read_text(encoding="utf-8")
+
+    assert 'cron: "*/30 * * * *"' in workflow
+    assert "workflow_dispatch:" in workflow
+    assert "GOOGLE_SERVICE_ACCOUNT_JSON" in workflow
+    assert "GOOGLE_SHEET_ID" in workflow
+    assert "python integrations/google-form/import_responses.py" in workflow
+    assert "git diff --cached --quiet" in workflow
+    assert "gh workflow run pages.yml --ref main" in workflow
+
+
 def test_all_planned_stylesheets_exist_and_are_linked() -> None:
     base = (REPOSITORY / "templates/base.html").read_text(encoding="utf-8")
     names = (

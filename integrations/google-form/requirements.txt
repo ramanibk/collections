@@ -1,0 +1,5 @@
+google-auth>=2.0,<3
+Pillow>=10,<13
+pillow-heif>=0.18,<2
+python-dateutil>=2.8,<3
+requests>=2.31,<3

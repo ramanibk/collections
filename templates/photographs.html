@@ -1,15 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-  {% set portrait_samples = [
-    ('bird.jpg', '2026.08.18', 'Bird study', 'Portrait', 'sample-1'),
-    ('embroidery.jpg', '2026.07.03', 'Thread study', 'Portrait', 'sample-2'),
-    ('shell.jpg', '2026.05.22', 'Found form', 'Portrait', 'sample-3')
-  ] %}
-  {% set landscape_samples = [
-    ('lenticular-clouds.jpg', '2026.09.18', 'Lenticular field', 'Landscape', 'sample-4'),
-    ('cat.jpg', '2026.06.12', 'Afternoon rest', 'Landscape', 'sample-5'),
-    ('cloud.jpg', '2026.04.27', 'Single cloud', 'Landscape', 'sample-6')
-  ] %}
   <section class="archive-gallery" aria-label="Photographs">
     {% if photo_entries %}
       {% for entry, row, column in gallery_items %}
@@ -20,36 +10,7 @@
         </a>
       {% endfor %}
     {% else %}
-      {% for filename, date, title, format, photo_id in portrait_samples %}
-        <button class="archive-card archive-card--portrait" type="button" data-photo-dialog="{{ photo_id }}" aria-label="{{ title }}" style="--gallery-row: 1; --gallery-column: {{ loop.index }}">
-          <figure><img src="{{ static_url('images/samples/' ~ filename) }}" alt="{{ title }}" loading="lazy"></figure>
-        </button>
-      {% endfor %}
-      {% for filename, date, title, format, photo_id in landscape_samples %}
-        <button class="archive-card archive-card--landscape" type="button" data-photo-dialog="{{ photo_id }}" aria-label="{{ title }}" style="--gallery-row: {{ loop.index * 2 - 1 }}; --gallery-column: 4">
-          <figure><img src="{{ static_url('images/samples/' ~ filename) }}" alt="{{ title }}" loading="lazy"></figure>
-        </button>
-      {% endfor %}
+      <p>No photographs yet.</p>
     {% endif %}
   </section>
-
-  {% for filename, date, title, format, photo_id in portrait_samples + landscape_samples %}
-    <dialog class="photo-detail" id="photo-{{ photo_id }}">
-      <button class="photo-detail__close" type="button" data-close-dialog>Close</button>
-      <div class="photo-record">
-        <figure><img src="{{ static_url('images/samples/' ~ filename) }}" alt="{{ title }}"></figure>
-        <aside>
-          <p class="section-number">FIELD OBSERVATION · SAMPLE</p>
-          <h2>{{ title }}</h2>
-          <dl class="compact-record">
-            <div><dt>Date</dt><dd>{{ date }}</dd></div>
-            <div><dt>Location</dt><dd>Berkeley, California</dd></div>
-            <div><dt>Format</dt><dd>{{ format }}</dd></div>
-            <div><dt>Notes</dt><dd>Light, structure, and an ordinary moment retained.</dd></div>
-          </dl>
-        </aside>
-      </div>
-    </dialog>
-  {% endfor %}
 {% endblock %}
-{% block scripts %}<script src="{{ static_url('js/gallery.js') }}"></script>{% endblock %}
